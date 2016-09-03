@@ -23,7 +23,6 @@ namespace SlideMenu
 		int _compactChevronSize = 18;
 
 		nfloat? _firstTouchY;
-		nfloat? _lastTouchY;
 
 		UITableView _expandedTableView;
 		//UILabel _collapsedLabel;
@@ -241,9 +240,6 @@ namespace SlideMenu
 			table.RowHeight = UITableView.AutomaticDimension;
 			table.Bounces = false;
 
-			table.Layer.BorderWidth = 1;
-			table.Layer.BorderColor = UIColor.Black.CGColor;
-
 			return table;
 		}
 
@@ -267,17 +263,11 @@ namespace SlideMenu
 		private void SlideMenuFromPan(UIPanGestureRecognizer panGesture)
 		{
 			var menuTouchLocation = panGesture.LocationInView(this);
-			var superviewTouchLocation = panGesture.LocationInView(Superview);
-
 			var velocity = panGesture.VelocityInView(this);
 
 			if (_firstTouchY == null)
 			{
 				_firstTouchY = menuTouchLocation.Y;
-			}
-			if (_lastTouchY == null)
-			{
-				_lastTouchY = menuTouchLocation.Y;
 			}
 
 			if ((panGesture.State == UIGestureRecognizerState.Began ||
@@ -292,7 +282,7 @@ namespace SlideMenu
 						offset = (nfloat)(Frame.Height - menuTouchLocation.Y + _firstTouchY);
 						break;
 					case MenuPositionType.Top:
-						offset = (nfloat)(superviewTouchLocation.Y + _lastTouchY);
+						offset = menuTouchLocation.Y;
 						break;
 				}
 
@@ -333,9 +323,6 @@ namespace SlideMenu
 				// instantly update height, do not use animation or it will not keep up with pan gesture
 				_mainHeightConstraint.Constant = offset;
 				this.LayoutIfNeeded();
-
-				// only used if menu is on top
-				_lastTouchY = superviewTouchLocation.Y;
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Ended)
 			{
@@ -359,7 +346,6 @@ namespace SlideMenu
 
 				// reset pan values
 				_firstTouchY = null;
-				_lastTouchY = null;
 
 				AnimateMenu(finalSize, compactViewAlpha, expandedViewAlpha, null);
 			}

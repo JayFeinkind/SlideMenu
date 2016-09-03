@@ -45,10 +45,10 @@ namespace SlideMenu
 
 			menuView.AddConstraint(
 				NSLayoutConstraint.Create(
-					contentView,
+					menuView,
 					NSLayoutAttribute.Top,
 					NSLayoutRelation.GreaterThanOrEqual,
-					menuView,
+					contentView,
 					NSLayoutAttribute.Top,
 				1,
 				1));
