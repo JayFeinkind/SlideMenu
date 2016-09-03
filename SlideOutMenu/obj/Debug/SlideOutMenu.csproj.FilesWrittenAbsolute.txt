@@ -1,6 +1,0 @@
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/obj/Debug/Xamarin.iOS,Version=v1.0.AssemblyAttribute.cs
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/obj/Debug/optimized/
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/bin/Debug/SlideOutMenu.dll.mdb
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/bin/Debug/SlideOutMenu.dll
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/obj/Debug/SlideOutMenu.dll
-/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/obj/Debug/SlideOutMenu.dll.mdb
