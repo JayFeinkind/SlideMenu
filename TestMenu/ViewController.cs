@@ -12,7 +12,7 @@ namespace TestMenu
 			// Note: this .ctor should not contain any initialization logic.
 		}
 
-		SlideOutMenu<string> _menu;
+		SlideOutMenu _menu;
 
 		public override void ViewDidLoad()
 		{
@@ -21,11 +21,20 @@ namespace TestMenu
 
 			View.BackgroundColor = UIColor.Green;
 
-			_menu = new SlideOutMenu<string>(MenuPositionType.Bottom);
+			_menu = new SlideOutMenu(MenuPositionType.Bottom);
 			//_menu.ChevronOffset = 100
 			//_menu.HideMenuBackgroundOnCollapse = false
 			_menu.AddRoomForNavigationBar = false;
-			_menu.AddMenuToSuperview(this.View, Enumerable.Range(0, 7).Select(n => n.ToString()), "0");
+
+
+			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel { 
+				Data = n,
+				DisplayName = n.ToString(),
+				MenuOptionSelected = null
+			});
+
+
+			_menu.AddMenuToSuperview(this.View, values, values.First());
 		}
 
 		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)

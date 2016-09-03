@@ -7,15 +7,12 @@ using Foundation;
 
 namespace SlideMenu
 {
-	public class SlideOutMenu<T> : UIView
-		where T : class
+	public class SlideOutMenu : UIView
 	{
 		#region Private Fields
 
 		public event Action MenuClosedHandler;
 		public event Action MenuOpenHandler;
-
-		public event Action<T> ValueSelectedHandler;
 
 		UITapGestureRecognizer _menuTapGesture;
 		UIPanGestureRecognizer _menuPanGesture;
@@ -37,12 +34,12 @@ namespace SlideMenu
 
 		MenuPositionType _position;
 
-		IEnumerable<T> _values;
+		IEnumerable<MenuOptionModel> _values;
 
 		NSLayoutConstraint _mainHeightConstraint;
 		NSLayoutConstraint _chevronHeightConstraint;
 
-		T _currentSelection;
+		MenuOptionModel _currentSelection;
 
 		IMenuConstraints _menuConstraints;
 
@@ -62,10 +59,10 @@ namespace SlideMenu
 		/// </summary>
 		/// <param name="positiion">Positiion.</param>
 		/// <param name="values">Values.</param>
-		public SlideOutMenu(MenuPositionType positiion, IEnumerable<T> values = null)
+		public SlideOutMenu(MenuPositionType positiion, IEnumerable<MenuOptionModel> values = null)
 		{
 			_position = positiion;
-			_values = values ?? new List<T>();
+			_values = values ?? new List<MenuOptionModel>();
 
 			TranslatesAutoresizingMaskIntoConstraints = false;
 			ChevronOffset = 0;
@@ -76,7 +73,7 @@ namespace SlideMenu
 
 		#region Add Menu to View
 
-		public void AddMenuToSuperview(UIView superView, IEnumerable<T> values, T presetValue = null)
+		public void AddMenuToSuperview(UIView superView, IEnumerable<MenuOptionModel> values, MenuOptionModel presetValue = null)
 		{
 			_superView = superView;
 
@@ -237,7 +234,7 @@ namespace SlideMenu
 			var table = new UITableView();
 			table.TableFooterView = new UIView();
 			table.TranslatesAutoresizingMaskIntoConstraints = false;
-			table.Source = new MenuTableViewSource<T>(ValueSelectedHandler, _values);
+			table.Source = new MenuTableViewSource(_values);
 			table.UserInteractionEnabled = true;
 			table.EstimatedRowHeight = 50;
 			table.BackgroundColor = UIColor.Clear;

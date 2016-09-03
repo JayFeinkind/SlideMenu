@@ -6,18 +6,15 @@ using UIKit;
 
 namespace SlideMenu
 {
-	public class MenuTableViewSource<T> : UITableViewSource
-		where T : class
+	public class MenuTableViewSource : UITableViewSource
 	{
 		
 		const string DefaultCellIdentifier = "DefaultCell";
-		Action<T> _rowSelected;
-		IEnumerable<T> _values;
+		IEnumerable<MenuOptionModel> _values;
 
-		public MenuTableViewSource(Action<T> rowSelected, IEnumerable<T> values)
+		public MenuTableViewSource(IEnumerable<MenuOptionModel> values)
 		{
 			_values = values;
-			_rowSelected = rowSelected;
 		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -27,7 +24,7 @@ namespace SlideMenu
 
 			cell.BackgroundColor = UIColor.Clear;
 
-			cell.TextLabel.Text = _values.ElementAt(indexPath.Row).ToString();
+			cell.TextLabel.Text = _values.ElementAt(indexPath.Row).DisplayName;
 			cell.TextLabel.TextColor = tableView.TintColor;
 			cell.TextLabel.Lines = 0;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
@@ -50,9 +47,9 @@ namespace SlideMenu
 
 			var type = _values.ElementAt(indexPath.Row);
 
-			if (_rowSelected != null)
+			if (type.MenuOptionSelected != null)
 			{
-				_rowSelected(type);
+				type.MenuOptionSelected(type.Data);
 			}
 		}
 	}
