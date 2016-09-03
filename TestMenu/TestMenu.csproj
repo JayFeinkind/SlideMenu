@@ -119,9 +119,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SlideOutMenu\SlideOutMenu.csproj">
+    <ProjectReference Include="..\SlideOutMenu\SlideMenu.csproj">
       <Project>{94475DB4-4D84-4B99-9809-48EA68EBB4FB}</Project>
-      <Name>SlideOutMenu</Name>
+      <Name>SlideMenu</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

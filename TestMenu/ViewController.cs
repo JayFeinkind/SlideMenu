@@ -20,6 +20,12 @@ namespace TestMenu
 			// Perform any additional setup after loading the view, typically from a nib.
 
 			View.BackgroundColor = UIColor.Green;
+
+			_menu = new SlideOutMenu<string>(MenuPositionType.Bottom);
+			//_menu.ChevronOffset = 100
+			//_menu.HideMenuBackgroundOnCollapse = false
+			_menu.AddRoomForNavigationBar = false;
+			_menu.AddMenuToSuperview(this.View, Enumerable.Range(0, 7).Select(n => n.ToString()), "0");
 		}
 
 		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)

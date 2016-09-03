@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMenu", "TestMenu\TestMenu.csproj", "{B35B8DBF-8C03-4B4E-B756-66BAC323E7B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlideOutMenu", "SlideOutMenu\SlideOutMenu.csproj", "{94475DB4-4D84-4B99-9809-48EA68EBB4FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlideMenu", "SlideOutMenu\SlideMenu.csproj", "{94475DB4-4D84-4B99-9809-48EA68EBB4FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -54,6 +54,9 @@
     <Compile Include="MenuTableViewSource.cs" />
     <Compile Include="ChevronView.cs" />
     <Compile Include="MenuBoarder.cs" />
+    <Compile Include="IMenuConstraints.cs" />
+    <Compile Include="TopMenuConstraints.cs" />
+    <Compile Include="BottomMenuConstraints.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

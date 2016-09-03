@@ -26,12 +26,13 @@ namespace SlideMenu
 		int _compactChevronSize = 18;
 
 		nfloat? _firstTouchY;
+		nfloat? _lastTouchY;
 
 		UITableView _expandedTableView;
 		//UILabel _collapsedLabel;
-		UIView _chevronImage;
+		UIView _chevronContainer;
 		UIView _menuBorder;
-
+		UIView _chevronView;
 		UIView _superView;
 
 		MenuPositionType _position;
@@ -42,6 +43,8 @@ namespace SlideMenu
 		NSLayoutConstraint _chevronHeightConstraint;
 
 		T _currentSelection;
+
+		IMenuConstraints _menuConstraints;
 
 		// 44 is the default row height for table view
 		int _estimatedRowHeight = 44;
@@ -66,6 +69,9 @@ namespace SlideMenu
 
 			TranslatesAutoresizingMaskIntoConstraints = false;
 			ChevronOffset = 0;
+			ShowCurrentSelection = true;
+			HideMenuBackgroundOnCollapse = true;
+			AddRoomForNavigationBar = false;
 		}
 
 		#region Add Menu to View
@@ -73,8 +79,6 @@ namespace SlideMenu
 		public void AddMenuToSuperview(UIView superView, IEnumerable<T> values, T presetValue = null)
 		{
 			_superView = superView;
-
-			BackgroundColor = UIColor.White.ColorWithAlpha(0);
 
 			// add 5 for the top constraint
 			int estimatedHeight = values.Count() * _estimatedRowHeight + _compactChevronSize + 5;
@@ -104,53 +108,93 @@ namespace SlideMenu
 			SetTapGesture();
 
 			_menuPanGesture = new UIPanGestureRecognizer(SlideMenuFromPan);
-			//AddGestureRecognizer(_menuPanGesture);
-			_chevronImage.AddGestureRecognizer(_menuPanGesture);
+
+			if (HideMenuBackgroundOnCollapse == false)
+			{
+				AddGestureRecognizer(_menuPanGesture);
+			}
+			else
+			{
+				_chevronContainer.AddGestureRecognizer(_menuPanGesture);
+			}
 
 			_expandedTableView.Alpha = 0;
-			_menuBorder.Alpha = 0;
+
 			//_collapsedLabel.Alpha = 1;
 
-			_chevronImage.UserInteractionEnabled = true;
+			_chevronContainer.UserInteractionEnabled = true;
 
+			BackgroundColor = UIColor.White.ColorWithAlpha(HideMenuBackgroundOnCollapse ? 0 : 1);
+			_menuBorder.Alpha = HideMenuBackgroundOnCollapse ? 0 : 1;
+
+			var angle = GetChevronAngle(false);
+
+			_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
+		}
+
+		private float GetChevronAngle(bool menuOpen)
+		{
 			float angle = 0;
 
 			if (_position == MenuPositionType.Bottom)
 			{
-				angle = (float)Math.PI * 4;
+				angle = menuOpen ? (float)Math.PI : (float)Math.PI * 4;
 			}
 			else if (_position == MenuPositionType.Top)
 			{
-				angle = (float)Math.PI;
+				angle = !menuOpen ? (float)Math.PI : (float)Math.PI * 4;
 			}
 
-			_chevronImage.Transform = CGAffineTransform.MakeRotation(angle);
+			return angle;
 		}
 
 		private void SetupUI()
 		{
+			switch (_position)
+			{
+				case MenuPositionType.Bottom:
+					_menuConstraints = new BottomMenuConstraints();
+					break;
+				case MenuPositionType.Top:
+					_menuConstraints = new TopMenuConstraints();
+					break;
+			}
+
 			_expandedTableView = GetExpandedMenuTable();
 			//_collapsedLabel = GetCollapsedMenuLabel();
-			_chevronImage = GetChevronView();
+			_chevronContainer = GetChevronContainerView();
+			_chevronView = GetChevronView();
 			_menuBorder = new MenuBoarder();
 
 			AddSubview(_menuBorder);
 			AddSubview(_expandedTableView);
 			//AddSubview(_collapsedLabel);
-			AddSubview(_chevronImage);
+			AddSubview(_chevronContainer);
+			AddSubview(_chevronView);
 
-			AddBorderConstraints();
-			AddChevronConstraints();
-			AddMenuConstraints(_expandedTableView);
+
+			_menuConstraints.AddBorderConstraints(this, _menuBorder);
+			_menuConstraints.AddChevronContainerConstraints(this, _chevronContainer, ChevronOffset, _minSize);
+			_menuConstraints.AddChevronConstraints(this, _chevronView);
+			_menuConstraints.AddContentConstraints(this, _expandedTableView, _chevronContainer);
+			_menuConstraints.AddMainConstraints(this, _superView, AddRoomForNavigationBar, _minSize);
+
+			_mainHeightConstraint = _superView.Constraints.First(c => c.FirstItem == this && c.FirstAttribute == NSLayoutAttribute.Height);
+			_chevronHeightConstraint = this.Constraints.First(c => c.FirstItem == _chevronContainer && c.FirstAttribute == NSLayoutAttribute.Height);
 			//AddMenuConstraints(_collapsedLabel);
-			AddMainConstraints();
 
+			BringSubviewToFront(_chevronContainer);
 		}
 
 		private void SetTapGesture()
 		{
 			_menuTapGesture = new UITapGestureRecognizer(ShowOrHideMenuFromTap);
-			_chevronImage.AddGestureRecognizer(_menuTapGesture);
+			_chevronContainer.AddGestureRecognizer(_menuTapGesture);
+
+			if (HideMenuBackgroundOnCollapse == false)
+			{
+				AddGestureRecognizer(_menuTapGesture);
+			}
 
 			/// <summary>
 			/// This will override whether or not to execute event.  It will let the user
@@ -161,7 +205,7 @@ namespace SlideMenu
 			/// This will prevent the main view tap gesture
 			/// 	from overriding the table view selection.
 			/// </summary>
-			_menuTapGesture.ShouldReceiveTouch += (recognizer, touch) => (touch.View == this || touch.View == _chevronImage);
+			_menuTapGesture.ShouldReceiveTouch += (recognizer, touch) => (touch.View == this || touch.View == _chevronContainer);
 
 			_menuTapGesture.CancelsTouchesInView = false;
 		}
@@ -179,6 +223,15 @@ namespace SlideMenu
 			return view;
 		}
 
+		private UIView GetChevronContainerView()
+		{
+			var view = new UIView();
+			view.BackgroundColor = UIColor.Clear;
+			view.TranslatesAutoresizingMaskIntoConstraints = false;
+
+			return view;
+		}
+
 		private UITableView GetExpandedMenuTable()
 		{
 			var table = new UITableView();
@@ -190,6 +243,9 @@ namespace SlideMenu
 			table.BackgroundColor = UIColor.Clear;
 			table.RowHeight = UITableView.AutomaticDimension;
 			table.Bounces = false;
+
+			table.Layer.BorderWidth = 1;
+			table.Layer.BorderColor = UIColor.Black.CGColor;
 
 			return table;
 		}
@@ -213,29 +269,45 @@ namespace SlideMenu
 
 		private void SlideMenuFromPan(UIPanGestureRecognizer panGesture)
 		{
-			var touchLocation = panGesture.LocationInView(this);
+			var menuTouchLocation = panGesture.LocationInView(this);
+			var superviewTouchLocation = panGesture.LocationInView(Superview);
+
+			var velocity = panGesture.VelocityInView(this);
 
 			if (_firstTouchY == null)
 			{
-				_firstTouchY = touchLocation.Y;
+				_firstTouchY = menuTouchLocation.Y;
 			}
-
-			// offset represents height from buttom of screen
-			var offset = _position == MenuPositionType.Bottom ? 
-			                                          this.Frame.Height - touchLocation.Y + _firstTouchY : 
-			                                          touchLocation.Y + _firstTouchY;
+			if (_lastTouchY == null)
+			{
+				_lastTouchY = menuTouchLocation.Y;
+			}
 
 			if ((panGesture.State == UIGestureRecognizerState.Began ||
 				 panGesture.State == UIGestureRecognizerState.Changed) &&
 				(panGesture.NumberOfTouches == 1))
 			{
+				nfloat offset = 0;
+
+				switch (_position)
+				{
+					case MenuPositionType.Bottom:
+						offset = (nfloat)(Frame.Height - menuTouchLocation.Y + _firstTouchY);
+						break;
+					case MenuPositionType.Top:
+						offset = (nfloat)(superviewTouchLocation.Y + _lastTouchY);
+						break;
+				}
+
+				Console.WriteLine(offset);
+
 				if (_chevronHeightConstraint.Constant != _compactChevronSize)
 				{
 					_chevronHeightConstraint.Constant = _compactChevronSize;
-					_chevronImage.SetNeedsDisplay();
+					_chevronContainer.SetNeedsDisplay();
 				}
 
-				var alpha = Math.Pow((double)(offset / _maxSize), 2);
+				var alpha = Math.Pow(_mainHeightConstraint.Constant / _maxSize, 2);
 
 				// ensure alpha is between 0 and 1, only happens if dragged further then the bounds
 				if (alpha > 1)
@@ -244,25 +316,32 @@ namespace SlideMenu
 					alpha = 0;
 
 
-				var degrees = (offset / _maxSize) * 180;
+				var degrees = (_mainHeightConstraint.Constant / _maxSize) * 180;
 				var radians = degrees * (Math.PI / 180);
 
-				_chevronImage.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
+				_chevronView.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
 
 				_expandedTableView.Alpha = (nfloat)alpha;
 				//_collapsedLabel.Alpha = (nfloat)(1 - alpha);
 
-				nfloat backgroundAlpha = _expandedTableView.Alpha > 0.9f ? 0.9f : _expandedTableView.Alpha;
+				nfloat backgroundAlpha = 1;
+
+				if (HideMenuBackgroundOnCollapse == true)
+				{
+					backgroundAlpha = _expandedTableView.Alpha > 0.9f ? 0.9f : _expandedTableView.Alpha;
+				}
+
 				BackgroundColor = BackgroundColor.ColorWithAlpha(backgroundAlpha);
 
 				// instantly update height, do not use animation or it will not keep up with pan gesture
-				_mainHeightConstraint.Constant = offset.Value;
+				_mainHeightConstraint.Constant = offset;
 				this.LayoutIfNeeded();
+
+				// only used if menu is on top
+				_lastTouchY = superviewTouchLocation.Y;
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Ended)
 			{
-				var velocity = panGesture.VelocityInView(this);
-
 				// set final position based on swipe direction
 				int finalSize = 0;
 
@@ -275,12 +354,15 @@ namespace SlideMenu
 					finalSize = velocity.Y > 0 ? ExpandedMenuSize : CollapsedMenuSize;
 				}
 
+				// this will not actually change anything untill LayoutIfNeeded is called
 				_mainHeightConstraint.Constant = finalSize;
 
 				int compactViewAlpha = Convert.ToInt16(finalSize == CollapsedMenuSize);
 				int expandedViewAlpha = Convert.ToInt16(finalSize == ExpandedMenuSize);
 
+				// reset pan values
 				_firstTouchY = null;
+				_lastTouchY = null;
 
 				AnimateMenu(finalSize, compactViewAlpha, expandedViewAlpha, null);
 			}
@@ -313,26 +395,23 @@ namespace SlideMenu
 
 			_mainHeightConstraint.Constant = newHeight;
 
-			float angle = 0;
+			float angle = GetChevronAngle(menuOpen);
 
-			if (_position == MenuPositionType.Bottom)
-			{
-				angle = menuOpen ? (float)Math.PI : (float)Math.PI * 4;
-			}
-			else if (_position == MenuPositionType.Top)
-			{
-				angle = !menuOpen ? (float)Math.PI : (float)Math.PI * 4;
-			}
+			nfloat backgroundAlpha = 1;
 
-			nfloat backgroundAlpha = expandedViewAlpha > 0.9f ? 0.9f : expandedViewAlpha;
+			if (HideMenuBackgroundOnCollapse == true)
+			{
+
+				backgroundAlpha = expandedViewAlpha > 0.9f ? 0.9f : expandedViewAlpha;
+			}
 
 			// previously using 0.7 and 1.0 for sping values but it was a bit slow
 			AnimateNotify(1f, 0, 0.50f, 0.8f, UIViewAnimationOptions.CurveEaseInOut, () =>
 		   {
-				_chevronImage.Transform = CGAffineTransform.MakeRotation(angle);
+				_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
 			   //_collapsedLabel.Alpha = collapsedViewAlpha;
 			   _expandedTableView.Alpha = expandedViewAlpha;
-			   _menuBorder.Alpha = expandedViewAlpha;
+			   _menuBorder.Alpha = HideMenuBackgroundOnCollapse ? expandedViewAlpha : 1;
 				BackgroundColor = BackgroundColor.ColorWithAlpha(backgroundAlpha);
 				this.LayoutIfNeeded();
 		   }, completionBlock);
@@ -342,25 +421,26 @@ namespace SlideMenu
 
 		private void UpdateMenuLayout(bool menuOpen)
 		{
-			if (menuOpen)
+			if (HideMenuBackgroundOnCollapse == true)
 			{
-				_chevronImage.RemoveGestureRecognizer(_menuPanGesture);
-				_chevronImage.RemoveGestureRecognizer(_menuTapGesture);
-				AddGestureRecognizer(_menuTapGesture);
-				AddGestureRecognizer(_menuPanGesture);
-
-				_chevronHeightConstraint.Constant = _compactChevronSize;
+				if (menuOpen)
+				{
+					_chevronContainer.RemoveGestureRecognizer(_menuPanGesture);
+					_chevronContainer.RemoveGestureRecognizer(_menuTapGesture);
+					AddGestureRecognizer(_menuTapGesture);
+					AddGestureRecognizer(_menuPanGesture);
+				}
+				else
+				{
+					_chevronContainer.AddGestureRecognizer(_menuPanGesture);
+					_chevronContainer.AddGestureRecognizer(_menuTapGesture);
+					RemoveGestureRecognizer(_menuTapGesture);
+					RemoveGestureRecognizer(_menuPanGesture);
+				}
 			}
-			else
-			{
-				_chevronImage.AddGestureRecognizer(_menuPanGesture);
-				_chevronImage.AddGestureRecognizer(_menuTapGesture);
-				RemoveGestureRecognizer(_menuTapGesture);
-				RemoveGestureRecognizer(_menuPanGesture);
-				_chevronHeightConstraint.Constant = 50;
-			}
 
-			_chevronImage.SetNeedsDisplay();
+			_chevronHeightConstraint.Constant = menuOpen ? _compactChevronSize : _minSize;
+			_chevronContainer.SetNeedsDisplay();
 
 			if (menuOpen && MenuOpenHandler != null)
 			{
@@ -374,144 +454,13 @@ namespace SlideMenu
 
 		#endregion
 
-		#region Constraints
-
-		private void AddMainConstraints()
-		{
-			if (_superView != null)
-			{
-				_mainHeightConstraint = NSLayoutConstraint.Create(this, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, _minSize);
-				_superView.AddConstraint(_mainHeightConstraint);
-
-				switch (_position)
-				{
-					case MenuPositionType.Bottom:
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Bottom, 1, 0));
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Right, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Right, 1, 0));
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Left, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Left, 1, 0));
-						break;
-					case MenuPositionType.Top:
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Top, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Top, 1, 0));
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Right, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Right, 1, 0));
-						_superView.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Left, NSLayoutRelation.Equal, _superView, NSLayoutAttribute.Left, 1, 0));
-						break;
-				}
-			}
-		}
-
-		private void AddBorderConstraints()
-		{
-			switch (_position)
-			{
-				case MenuPositionType.Bottom:
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 1));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Top, 1, 0));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Left, NSLayoutRelation.Equal, this, NSLayoutAttribute.Left, 1, 0));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Right, NSLayoutRelation.Equal, this, NSLayoutAttribute.Right, 1, 0));
-					break;
-				case MenuPositionType.Top:
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 1));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Top, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1, 0));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Left, NSLayoutRelation.Equal, this, NSLayoutAttribute.Left, 1, 0));
-					AddConstraint(NSLayoutConstraint.Create(_menuBorder, NSLayoutAttribute.Right, NSLayoutRelation.Equal, this, NSLayoutAttribute.Right, 1, 0));
-					break;
-			}
-		}
-
-		private void AddChevronConstraints()
-		{
-			_chevronHeightConstraint = NSLayoutConstraint.Create(_chevronImage, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, _minSize);
-			AddConstraint(_chevronHeightConstraint);
-			AddConstraint(NSLayoutConstraint.Create(_chevronImage, NSLayoutAttribute.Width, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 30));
-			AddConstraint(NSLayoutConstraint.Create(_chevronImage, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1, (nfloat)ChevronOffset));
-
-			if (_position == MenuPositionType.Bottom)
-			{
-				AddConstraint(NSLayoutConstraint.Create(_chevronImage, NSLayoutAttribute.Top, NSLayoutRelation.Equal, this, NSLayoutAttribute.Top, 1, 5));
-			}
-			else if (_position == MenuPositionType.Top)
-			{
-				AddConstraint(NSLayoutConstraint.Create(_chevronImage, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1, 5));
-			}
-		}
-
-		private void AddMenuConstraints(UIView newView)
-		{
-			if (_position == MenuPositionType.Bottom)
-			{
-				// anchor to bottom of arrow image
-				AddConstraint(
-					NSLayoutConstraint.Create(
-						_chevronImage,
-						NSLayoutAttribute.Bottom,
-						NSLayoutRelation.Equal,
-						newView,
-						NSLayoutAttribute.Top,
-						1,
-						0));
-
-				// bottom constraint
-				AddConstraint(
-					NSLayoutConstraint.Create(
-						newView,
-						NSLayoutAttribute.Bottom,
-						NSLayoutRelation.GreaterThanOrEqual,
-						this,
-						NSLayoutAttribute.Bottom,
-					1,
-					1));
-			}
-			else if (_position == MenuPositionType.Top)
-			{
-				// anchor to bottom of arrow image
-				AddConstraint(
-					NSLayoutConstraint.Create(
-						_chevronImage,
-						NSLayoutAttribute.Top,
-						NSLayoutRelation.Equal,
-						newView,
-						NSLayoutAttribute.Bottom,
-						1,
-						0));
-
-				// bottom constraint
-				AddConstraint(
-					NSLayoutConstraint.Create(
-						newView,
-						NSLayoutAttribute.Top,
-						NSLayoutRelation.GreaterThanOrEqual,
-						this,
-						NSLayoutAttribute.Top,
-					1,
-					1));
-			}
-
-			// width constraint
-			newView.AddConstraint(
-				NSLayoutConstraint.Create(
-					newView,
-					NSLayoutAttribute.Width,
-					NSLayoutRelation.Equal,
-					null,
-					NSLayoutAttribute.NoAttribute,
-					1,
-					300));
-
-			// center horizontally
-			AddConstraint(
-				NSLayoutConstraint.Create(
-					this,
-					NSLayoutAttribute.CenterX,
-					NSLayoutRelation.Equal,
-					newView,
-					NSLayoutAttribute.CenterX,
-					1,
-					0));
-		}
-
-		#endregion
-
 		#region Public Properties
+
+		public bool AddRoomForNavigationBar { get; set; }
+
+		public bool HideMenuBackgroundOnCollapse { get; set; }
+
+		public bool ShowCurrentSelection { get; set; }
 
 		public double ChevronOffset { get; set; }
 
