@@ -1,0 +1,42 @@
+# Version: 9.8.2.22 (cycle7-sr1: f37444a)
+# [first argument, ignore] # /Users/jasonbfeinkind/Documents/TestMenu/TestMenu/mtouch.exe
+/Library/Frameworks/Xamarin.iOS.framework/Versions/9.8.2.22/bin/mtouch \
+	--cache \
+	/Users/jasonbfeinkind/Documents/TestMenu/TestMenu/obj/iPhoneSimulator/Debug/mtouch-cache \
+	--sim \
+	/Users/jasonbfeinkind/Documents/TestMenu/TestMenu/bin/iPhoneSimulator/Debug/TestMenu.app \
+	--executable \
+	TestMenu \
+	--fastdev \
+	--debug \
+	--nolink \
+	--sdkroot \
+	/Applications/Xcode.app/Contents/Developer \
+	--sdk \
+	9.3 \
+	--targetver \
+	8.0 \
+	--new-refcount \
+	--http-message-handler=HttpClientHandler \
+	--tls-provider=default \
+	--abi=i386 \
+	--symbollist \
+	/Users/jasonbfeinkind/Documents/TestMenu/TestMenu/obj/iPhoneSimulator/Debug/mtouch-symbols.list \
+	--dsym=no \
+	-r \
+	/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/System.dll \
+	-r \
+	/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/System.Xml.dll \
+	-r \
+	/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/Xamarin.iOS.dll \
+	-r \
+	/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/System.Core.dll \
+	-r \
+	/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/bin/Debug/SlideOutMenu.dll \
+	-r \
+	/Library/Frameworks/Xamarin.iOS.framework/Versions/Current/lib/mono/Xamarin.iOS/mscorlib.dll \
+	-r \
+	/Users/jasonbfeinkind/Documents/TestMenu/SlideOutMenu/bin/Debug/SlideOutMenu.dll \
+	--target-framework \
+	"Xamarin.iOS,v1.0" \
+	/Users/jasonbfeinkind/Documents/TestMenu/TestMenu/bin/iPhoneSimulator/Debug//TestMenu.exe \
