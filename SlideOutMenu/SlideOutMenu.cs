@@ -26,7 +26,7 @@ namespace SlideMenu
 		nfloat? _topPositionY;
 
 		UITableView _expandedTableView;
-		//UILabel _collapsedLabel;
+		UILabel _collapsedLabel;
 		UIView _chevronContainer;
 		UIView _menuBorder;
 		UIView _chevronView;
@@ -117,7 +117,7 @@ namespace SlideMenu
 
 			_expandedTableView.Alpha = 0;
 
-			//_collapsedLabel.Alpha = 1;
+			_collapsedLabel.Alpha = 1;
 
 			_chevronContainer.UserInteractionEnabled = true;
 
@@ -158,14 +158,14 @@ namespace SlideMenu
 			}
 
 			_expandedTableView = GetExpandedMenuTable();
-			//_collapsedLabel = GetCollapsedMenuLabel();
+			_collapsedLabel = GetCollapsedMenuLabel();
 			_chevronContainer = GetChevronContainerView();
 			_chevronView = GetChevronView();
 			_menuBorder = new MenuBoarder();
 
 			AddSubview(_menuBorder);
 			AddSubview(_expandedTableView);
-			//AddSubview(_collapsedLabel);
+			AddSubview(_collapsedLabel);
 			AddSubview(_chevronContainer);
 			AddSubview(_chevronView);
 
@@ -176,9 +176,12 @@ namespace SlideMenu
 			_menuConstraints.AddContentConstraints(this, _expandedTableView, _chevronContainer);
 			_menuConstraints.AddMainConstraints(this, _superView, AddRoomForNavigationBar, _minSize);
 
+			//Anchor the the label to the chevron view itself not the container or it will most likely
+			//   apear off screen
+			_menuConstraints.AddContentConstraints(this, _collapsedLabel, _chevronView);
+
 			_mainHeightConstraint = _superView.Constraints.First(c => c.FirstItem == this && c.FirstAttribute == NSLayoutAttribute.Height);
 			_chevronHeightConstraint = this.Constraints.First(c => c.FirstItem == _chevronContainer && c.FirstAttribute == NSLayoutAttribute.Height);
-			//AddMenuConstraints(_collapsedLabel);
 
 			BringSubviewToFront(_chevronContainer);
 		}
@@ -250,7 +253,7 @@ namespace SlideMenu
 
 			label.Font = UIFont.BoldSystemFontOfSize(17);
 			label.TextColor = UIColor.Black;
-			label.Text = _currentSelection.ToString();
+			label.Text = "0";
 			label.TextAlignment = UITextAlignment.Center;
 			label.TranslatesAutoresizingMaskIntoConstraints = false;
 
@@ -285,7 +288,7 @@ namespace SlideMenu
 					offset *= -1;
 				}
 
-				var alpha = Math.Pow(_mainHeightConstraint.Constant / _maxSize, 2);
+				var alpha = (nfloat)Math.Pow(_mainHeightConstraint.Constant / _maxSize, 2);
 
 				// ensure alpha is between 0 and 1, only happens if dragged further then the bounds
 				if (alpha > 1)
@@ -304,14 +307,16 @@ namespace SlideMenu
 
 				_chevronView.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
 
-				_expandedTableView.Alpha = (nfloat)alpha;
-				//_collapsedLabel.Alpha = (nfloat)(1 - alpha);
+				_expandedTableView.Alpha = alpha;
+				_collapsedLabel.Alpha = 1 - alpha;
 
 				nfloat backgroundAlpha = 1;
 
+				// if the menu is going to be hidden in compact mode change alpha of boarder and main background
 				if (HideMenuBackgroundOnCollapse == true)
 				{
 					backgroundAlpha = _expandedTableView.Alpha > 0.9f ? 0.9f : _expandedTableView.Alpha;
+					_menuBorder.Alpha = alpha;
 				}
 
 				BackgroundColor = BackgroundColor.ColorWithAlpha(backgroundAlpha);
@@ -387,7 +392,7 @@ namespace SlideMenu
 			AnimateNotify(1f, 0, 0.50f, 0.8f, UIViewAnimationOptions.CurveEaseInOut, () =>
 		   {
 				_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
-			   //_collapsedLabel.Alpha = collapsedViewAlpha;
+			   _collapsedLabel.Alpha = collapsedViewAlpha;
 			   _expandedTableView.Alpha = expandedViewAlpha;
 			   _menuBorder.Alpha = HideMenuBackgroundOnCollapse ? expandedViewAlpha : 1;
 				BackgroundColor = BackgroundColor.ColorWithAlpha(backgroundAlpha);
@@ -431,6 +436,21 @@ namespace SlideMenu
 		}
 
 		#endregion
+
+		public void AnimateClosed(UICompletionHandler completionHandler)
+		{
+			AnimateMenu(_minSize, 1, 0, completionHandler);
+		}
+
+		public void AnimateOpen(UICompletionHandler completionHandler)
+		{
+			AnimateMenu(_maxSize, 0, 1, completionHandler);
+		}
+
+		public void SetDisplayLabel(string str)
+		{
+			_collapsedLabel.Text = str;
+		}
 
 		#region Public Properties
 

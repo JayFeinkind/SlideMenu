@@ -21,16 +21,21 @@ namespace TestMenu
 
 			View.BackgroundColor = UIColor.Green;
 
-			_menu = new SlideOutMenu(MenuPositionType.Top);
+			_menu = new SlideOutMenu(MenuPositionType.Bottom);
 			//_menu.ChevronOffset = 100;
-			_menu.HideMenuBackgroundOnCollapse = false;
-			_menu.AddRoomForNavigationBar = true;
-			_menu.ExpandedMenuSize = 300;
+			_menu.HideMenuBackgroundOnCollapse = true;
+			_menu.AddRoomForNavigationBar = false;
+			//_menu.ExpandedMenuSize = 350;
 
-			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel { 
+			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
+			{
 				Data = n,
 				DisplayName = n.ToString(),
-				MenuOptionSelected = null
+				MenuOptionSelected = (str) =>
+				{
+					_menu.SetDisplayLabel(str.ToString());
+					_menu.AnimateClosed(null);
+				}
 			});
 
 
