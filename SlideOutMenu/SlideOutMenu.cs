@@ -22,7 +22,8 @@ namespace SlideMenu
 
 		int _compactChevronSize = 18;
 
-		nfloat? _firstTouchY;
+		nfloat? _bottomPositionY;
+		nfloat? _topPositionY;
 
 		UITableView _expandedTableView;
 		//UILabel _collapsedLabel;
@@ -265,33 +266,23 @@ namespace SlideMenu
 			var menuTouchLocation = panGesture.LocationInView(this);
 			var velocity = panGesture.VelocityInView(this);
 
-			if (_firstTouchY == null)
+			if (panGesture.State == UIGestureRecognizerState.Began && panGesture.NumberOfTouches == 1)
 			{
-				_firstTouchY = menuTouchLocation.Y;
+				_bottomPositionY = menuTouchLocation.Y;
+				_topPositionY = menuTouchLocation.Y;
 			}
-
-			if ((panGesture.State == UIGestureRecognizerState.Began ||
-				 panGesture.State == UIGestureRecognizerState.Changed) &&
-				(panGesture.NumberOfTouches == 1))
+			else if (panGesture.State == UIGestureRecognizerState.Changed && panGesture.NumberOfTouches == 1)
 			{
 				nfloat offset = 0;
 
-				switch (_position)
+				if (_position == MenuPositionType.Bottom)
 				{
-					case MenuPositionType.Bottom:
-						offset = (nfloat)(Frame.Height - menuTouchLocation.Y + _firstTouchY);
-						break;
-					case MenuPositionType.Top:
-						offset = menuTouchLocation.Y;
-						break;
+					offset = (_bottomPositionY ?? 0) - menuTouchLocation.Y;
 				}
-
-				Console.WriteLine(offset);
-
-				if (_chevronHeightConstraint.Constant != _compactChevronSize)
+				if (_position == MenuPositionType.Top)
 				{
-					_chevronHeightConstraint.Constant = _compactChevronSize;
-					_chevronContainer.SetNeedsDisplay();
+					offset = (_topPositionY ?? 0) - menuTouchLocation.Y;
+					offset *= -1;
 				}
 
 				var alpha = Math.Pow(_mainHeightConstraint.Constant / _maxSize, 2);
@@ -302,6 +293,11 @@ namespace SlideMenu
 				if (alpha < 0)
 					alpha = 0;
 
+				if (_chevronHeightConstraint.Constant != _compactChevronSize)
+				{
+					_chevronHeightConstraint.Constant = _compactChevronSize;
+					_chevronContainer.SetNeedsDisplay();
+				}
 
 				var degrees = (_mainHeightConstraint.Constant / _maxSize) * 180;
 				var radians = degrees * (Math.PI / 180);
@@ -321,8 +317,10 @@ namespace SlideMenu
 				BackgroundColor = BackgroundColor.ColorWithAlpha(backgroundAlpha);
 
 				// instantly update height, do not use animation or it will not keep up with pan gesture
-				_mainHeightConstraint.Constant = offset;
+				_mainHeightConstraint.Constant += offset;
 				this.LayoutIfNeeded();
+
+				_topPositionY = menuTouchLocation.Y;
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Ended)
 			{
@@ -343,9 +341,6 @@ namespace SlideMenu
 
 				int compactViewAlpha = Convert.ToInt16(finalSize == CollapsedMenuSize);
 				int expandedViewAlpha = Convert.ToInt16(finalSize == ExpandedMenuSize);
-
-				// reset pan values
-				_firstTouchY = null;
 
 				AnimateMenu(finalSize, compactViewAlpha, expandedViewAlpha, null);
 			}
