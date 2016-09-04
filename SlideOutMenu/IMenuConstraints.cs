@@ -31,14 +31,14 @@ namespace SlideMenu
 		/// </summary>
 		/// <param name="menuView">Menu view.</param>
 		/// <param name="chevronView">Chevron view.</param>
-		void AddChevronConstraints(UIView menuView, UIView chevronView);
+		void AddChevronConstraints(UIView menuView, UIView chevronView, UIView chevronContainer);
 
 		/// <summary>
 		/// Adds the content constraints. This is the menu table and selection label if used
 		/// </summary>
 		/// <param name="menuView">Menu view.</param>
 		/// <param name="contentView">Content view.</param>
-		void AddContentConstraints(UIView menuView, UIView contentView, UIView chevronView);
+		void AddContentConstraints(UIView menuView, UIView contentView, UIView chevronView, ContentPositionType position);
 	}
 }
 

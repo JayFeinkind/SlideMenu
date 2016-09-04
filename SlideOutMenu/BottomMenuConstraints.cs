@@ -13,12 +13,12 @@ namespace SlideMenu
 			menuView.AddConstraint(NSLayoutConstraint.Create(borderView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.Right, 1, 0));
 		}
 
-		public void AddChevronConstraints(UIView menuView, UIView chevronView)
+		public void AddChevronConstraints(UIView menuView, UIView chevronView, UIView chevronContainer)
 		{
 			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 18));
 			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Width, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 30));
-			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.CenterX, 1, 0));
-			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Top, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.Top, 1, 5));
+			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, chevronContainer, NSLayoutAttribute.CenterX, 1, 0));
+			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Top, NSLayoutRelation.Equal, chevronContainer, NSLayoutAttribute.Top, 1, 5));
 
 		}
 
@@ -26,56 +26,34 @@ namespace SlideMenu
 		{
 			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, initialHeight ?? 0));
 			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Width, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 30));
-			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.CenterX, 1, (nfloat)chevronOffset));
 			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Top, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.Top, 1, 5));
 		}
 
-		public void AddContentConstraints(UIView menuView, UIView contentView, UIView chevronView)
+		public void AddContentConstraints(UIView menuView, UIView contentView, UIView chevronView, ContentPositionType position)
 		{
-			// anchor to bottom of arrow image
-			menuView.AddConstraint(
-				NSLayoutConstraint.Create(
-					chevronView,
-					NSLayoutAttribute.Bottom,
-					NSLayoutRelation.Equal,
-					contentView,
-					NSLayoutAttribute.Top,
-					1,
-					0));
+			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, contentView, NSLayoutAttribute.CenterX, 1, 0));
 
+			// anchor to bottom of arrow image
+			menuView.AddConstraint(NSLayoutConstraint.Create(chevronView, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, contentView, NSLayoutAttribute.Top, 1, 0));
 			// bottom constraint
-			menuView.AddConstraint(
-				NSLayoutConstraint.Create(
-					contentView,
-					NSLayoutAttribute.Bottom,
-					NSLayoutRelation.GreaterThanOrEqual,
-					menuView,
-					NSLayoutAttribute.Bottom,
-				1,
-				1));
-			
+			menuView.AddConstraint(NSLayoutConstraint.Create(contentView, NSLayoutAttribute.Bottom, NSLayoutRelation.GreaterThanOrEqual, menuView, NSLayoutAttribute.Bottom, 1, 1));
 
 			// width constraint
-			contentView.AddConstraint(
-				NSLayoutConstraint.Create(
-					contentView,
-					NSLayoutAttribute.Width,
-					NSLayoutRelation.Equal,
-					null,
-					NSLayoutAttribute.NoAttribute,
-					1,
-					300));
+			contentView.AddConstraint(NSLayoutConstraint.Create(contentView, NSLayoutAttribute.Width, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, 300));
 
-			// center horizontally
-			menuView.AddConstraint(
-				NSLayoutConstraint.Create(
-					menuView,
-					NSLayoutAttribute.CenterX,
-					NSLayoutRelation.Equal,
-					contentView,
-					NSLayoutAttribute.CenterX,
-					1,
-					0));
+			switch (position)
+			{
+				case ContentPositionType.Center:
+					menuView.AddConstraint(NSLayoutConstraint.Create(menuView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, contentView, NSLayoutAttribute.CenterX, 1, 0));
+					break;
+				case ContentPositionType.Right:
+					menuView.AddConstraint(NSLayoutConstraint.Create(contentView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, menuView, NSLayoutAttribute.Right, 1, 0));
+					break;
+				case ContentPositionType.Left:
+					menuView.AddConstraint(NSLayoutConstraint.Create(menuView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, contentView, NSLayoutAttribute.Left, 1, 0));
+					break;
+			}
+
 		}
 
 		public void AddMainConstraints(UIView menuView, UIView superView, bool addRoomForNavigationBar, int? initialHeight)

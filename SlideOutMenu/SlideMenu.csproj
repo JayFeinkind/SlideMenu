@@ -58,6 +58,7 @@
     <Compile Include="TopMenuConstraints.cs" />
     <Compile Include="BottomMenuConstraints.cs" />
     <Compile Include="MenuOptionModel.cs" />
+    <Compile Include="ContentPositionType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

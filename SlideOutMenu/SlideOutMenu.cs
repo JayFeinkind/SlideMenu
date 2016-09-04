@@ -63,7 +63,8 @@ namespace SlideMenu
 		{
 			_position = positiion;
 			_values = values ?? new List<MenuOptionModel>();
-
+			CollapsedUIPosition = ContentPositionType.Center;
+			ExpandedUIPosition = ContentPositionType.Center;
 			TranslatesAutoresizingMaskIntoConstraints = false;
 			ChevronOffset = 0;
 			ShowCurrentSelection = true;
@@ -172,13 +173,13 @@ namespace SlideMenu
 
 			_menuConstraints.AddBorderConstraints(this, _menuBorder);
 			_menuConstraints.AddChevronContainerConstraints(this, _chevronContainer, ChevronOffset, _minSize);
-			_menuConstraints.AddChevronConstraints(this, _chevronView);
-			_menuConstraints.AddContentConstraints(this, _expandedTableView, _chevronContainer);
+			_menuConstraints.AddChevronConstraints(this, _chevronView, _chevronContainer);
+			_menuConstraints.AddContentConstraints(this, _expandedTableView, _chevronContainer, ExpandedUIPosition);
 			_menuConstraints.AddMainConstraints(this, _superView, AddRoomForNavigationBar, _minSize);
 
 			//Anchor the the label to the chevron view itself not the container or it will most likely
 			//   apear off screen
-			_menuConstraints.AddContentConstraints(this, _collapsedLabel, _chevronView);
+			_menuConstraints.AddContentConstraints(this, _collapsedLabel, _chevronView, CollapsedUIPosition);
 
 			_mainHeightConstraint = _superView.Constraints.First(c => c.FirstItem == this && c.FirstAttribute == NSLayoutAttribute.Height);
 			_chevronHeightConstraint = this.Constraints.First(c => c.FirstItem == _chevronContainer && c.FirstAttribute == NSLayoutAttribute.Height);
@@ -278,6 +279,7 @@ namespace SlideMenu
 			{
 				nfloat offset = 0;
 
+				// get offset from current touch to menu to create smoothe pan animation
 				if (_position == MenuPositionType.Bottom)
 				{
 					offset = (_bottomPositionY ?? 0) - menuTouchLocation.Y;
@@ -325,6 +327,7 @@ namespace SlideMenu
 				_mainHeightConstraint.Constant += offset;
 				this.LayoutIfNeeded();
 
+				// save change in location, only used when menu is on top
 				_topPositionY = menuTouchLocation.Y;
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Ended)
@@ -453,6 +456,10 @@ namespace SlideMenu
 		}
 
 		#region Public Properties
+
+		public ContentPositionType CollapsedUIPosition { get; set; }
+
+		public ContentPositionType ExpandedUIPosition { get; set; }
 
 		public bool AddRoomForNavigationBar { get; set; }
 
