@@ -82,7 +82,6 @@ namespace SlideMenu
 			CloseMenuOnSelection = true;
 		}
 
-
 		private void SetLayer()
 		{
 			Layer.MasksToBounds = false;
@@ -506,6 +505,8 @@ namespace SlideMenu
 
 		#endregion
 
+		#region Menu Selection Handlers
+
 		private void MenuSelectionHandler(MenuOptionModel model)
 		{
 			if (MenuOptionSelectedHandler != null)
@@ -523,6 +524,8 @@ namespace SlideMenu
 		{
 			return new Action<MenuOptionModel>(MenuSelectionHandler);
 		}
+
+		#endregion
 
 		#region Public Properties
 
