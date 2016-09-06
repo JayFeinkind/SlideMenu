@@ -82,6 +82,7 @@ namespace SlideMenu
 			CloseMenuOnSelection = true;
 			UsesSpringAnimation = true;
 			HideCurrentSelectionFromMenu = false;
+			DisplayLabelFont = UIFont.BoldSystemFontOfSize(16);
 		}
 
 		private void SetLayer()
@@ -98,11 +99,14 @@ namespace SlideMenu
 
 		public void AddMenuToView(UIView superView, IEnumerable<MenuOptionModel> values, MenuOptionModel presetValue = null)
 		{
+			if (superView == null) throw new ArgumentNullException(nameof(superView), "Super View can't be null");
+			if (values == null) throw new ArgumentNullException(nameof(values), "Must supply at least one value");
+
 			SetLayer();
 
-			// add 5 for the top constraint
 			var valueCount = HideCurrentSelectionFromMenu ? values.Count () - 1 : values.Count ();
 			int estimatedHeight = valueCount * _estimatedRowHeight + _compactChevronSize + 20;
+			estimatedHeight = Math.Max(80, estimatedHeight);
 
 			// If collapsed size is bigger then the expanded size and its bigger then the default 
 			//		size it will be reset both.
@@ -142,7 +146,6 @@ namespace SlideMenu
 			}
 
 			_expandedTableView.Alpha = 0;
-
 			_collapsedLabel.Alpha = 1;
 
 			_chevronContainer.UserInteractionEnabled = true;
@@ -157,9 +160,7 @@ namespace SlideMenu
 				BackgroundColor = MenuBackgroundColor;
 			}
 
-			var angle = GetChevronAngle(false);
-
-			_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
+			_chevronView.Transform = CGAffineTransform.MakeRotation(GetChevronAngle(menuOpen: false));
 			_expandedTableView.ReloadData();
 		}
 
@@ -193,7 +194,16 @@ namespace SlideMenu
 			AddSubview(_chevronView);
 			AddSubview(_expandedTableView);
 
-			var model = GetModelForView(this, _minSize);
+			var model = new MenuConstraintModel
+			{
+				CollapsedSize = _minSize,
+				ChevronView = _chevronView,
+				ChevronContainer = _chevronContainer,
+				ContentWidth = ContentWidth,
+				MenuView = this,
+				MenuShouldFillScreen = MenuShouldFillScreen,
+				ContentPosition = UIPosition
+			};
 
 			switch (_position)
 			{
@@ -218,19 +228,6 @@ namespace SlideMenu
 			BringSubviewToFront(_chevronContainer);
 		}
 
-		private MenuConstraintModel GetModelForView(UIView menuView, int height)
-		{
-			return new MenuConstraintModel
-			{
-				CollapsedSize = height,
-				ChevronView = _chevronView,
-				ChevronContainer = _chevronContainer,
-				ContentWidth = ContentWidth,
-				MenuView = menuView,
-				MenuShouldFillScreen = MenuShouldFillScreen,
-				ContentPosition = UIPosition
-			};
-		}
 
 		private void SetTapGesture()
 		{
@@ -263,7 +260,7 @@ namespace SlideMenu
 		private UIView GetCornerView()
 		{
 			var view = new UIView();
-			view.BackgroundColor = MenuBackgroundColor;
+			view.BackgroundColor = UIColor.Clear;
 			view.TranslatesAutoresizingMaskIntoConstraints = false;
 
 			return view;
@@ -306,12 +303,11 @@ namespace SlideMenu
 		{
 			var label = new UILabel();
 
-			label.Font = UIFont.BoldSystemFontOfSize(17);
+			label.Font = DisplayLabelFont;
 			label.TextColor = DisplayLabelColor;
 			label.Text = _currentSelection?.DisplayName ?? _values.FirstOrDefault()?.DisplayName;
 			label.TextAlignment = UITextAlignment.Center;
 			label.TranslatesAutoresizingMaskIntoConstraints = false;
-
 			return label;
 		}
 
@@ -435,8 +431,6 @@ namespace SlideMenu
 
 			_mainHeightConstraint.Constant = newHeight;
 
-			float angle = GetChevronAngle(menuOpen);
-
 			nfloat backgroundAlpha = expandedViewAlpha > MaxBackgroundAlpha ? MaxBackgroundAlpha : expandedViewAlpha;
 
 			AnimateNotify(
@@ -451,7 +445,7 @@ namespace SlideMenu
 	            UIViewAnimationOptions.CurveEaseInOut, 
 				() =>
 			   {
-					_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
+					_chevronView.Transform = CGAffineTransform.MakeRotation(GetChevronAngle(menuOpen));
 				   _collapsedLabel.Alpha = collapsedViewAlpha;
 				   _expandedTableView.Alpha = expandedViewAlpha;
 				   BackgroundColor = BackgroundColor.ColorWithAlpha( HideMenuBackgroundOnCollapse ? backgroundAlpha : 1);
@@ -544,6 +538,8 @@ namespace SlideMenu
 		#endregion
 
 		#region Public Properties
+
+		public UIFont DisplayLabelFont { get; set; }
 
 		public UITableViewSource ExpandedTableViewSource
 		{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SlideMenu;
 using UIKit;
@@ -13,8 +14,8 @@ namespace TestMenu
 		}
 
 		SlideOutMenu _menu;
-		SlideOutMenu _menuTwo;
-		SlideOutMenu _menuThree;
+		//SlideOutMenu _menuTwo;
+		//SlideOutMenu _menuThree;
 
 		public override void ViewDidLoad()
 		{
@@ -24,7 +25,7 @@ namespace TestMenu
 			View.BackgroundColor = UIColor.Green;
 
 			//_menuThree = GetMenu(ContentPositionType.Left, MenuPositionType.Top);
-			_menu = GetMenu(ContentPositionType.Right, MenuPositionType.Bottom);
+			_menu = GetMenu(ContentPositionType.Center, MenuPositionType.Bottom);
 			//_menuTwo = GetMenu(ContentPositionType.Left, MenuPositionType.Bottom);
 
 		}
@@ -33,21 +34,37 @@ namespace TestMenu
 		{
 			var menu = new SlideOutMenu(menuPosition);
 
-			menu.HideMenuBackgroundOnCollapse = false;
-			menu.ContentWidth = 300;
-			menu.MenuShouldFillScreen = false;
 
-			menu.UIPosition = position;
+
+
+
+			//menu.UIPosition = position;
 			//menu.ExpandedMenuSize = 150;
-			menu.HideCurrentSelectionFromMenu = true;
-			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
+			//menu.HideCurrentSelectionFromMenu = true;
+
+			List<MenuOptionModel> models = new List<MenuOptionModel>();
+
+			models.Add(new MenuOptionModel { 
+				Data = "New POS Order",
+				DisplayName = "New POS Order" + " " + "New POS Order" + " " + "New POS Order"
+			});
+			models.Add(new MenuOptionModel
 			{
-				Data = n,
-				DisplayName = n.ToString(),
-				MenuOptionSelected = null
+				Data = "Service History Catalog",
+				DisplayName = "Service History Catalog"
+			});
+			models.Add(new MenuOptionModel
+			{
+				Data = "Order History By Date",
+				DisplayName = "Order History By Date"
+			});
+			models.Add(new MenuOptionModel
+			{
+				Data = "Select New Option",
+				DisplayName = "Select New Option"
 			});
 
-			menu.AddMenuToView(this.View, values, null);
+			menu.AddMenuToView(this.View, models, models.First());
 			return menu;
 		}
 

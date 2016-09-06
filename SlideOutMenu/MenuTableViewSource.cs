@@ -29,8 +29,10 @@ namespace SlideMenu
 
 			cell.BackgroundColor = UIColor.Clear;
 
-			cell.TextLabel.Text = Values.ElementAt(indexPath.Row).DisplayName;
-			cell.TextLabel.TextColor = tableView.TintColor;
+			var val = Values.ElementAt(indexPath.Row);
+
+			cell.TextLabel.Text = val.DisplayName;
+			cell.TextLabel.TextColor = val.DisplayColor;
 			cell.TextLabel.Lines = 0;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			cell.TextLabel.Font = UIFont.BoldSystemFontOfSize(17);
