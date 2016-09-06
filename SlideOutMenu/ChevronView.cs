@@ -7,6 +7,13 @@ namespace SlideMenu
 {
 	public class ChevronView : UIView
 	{
+		UIColor _color;
+
+		public ChevronView(UIColor color)
+		{
+			_color = color;
+		}
+
 		public override void Draw(CGRect rect)
 		{
 			base.Draw(rect);
@@ -14,7 +21,7 @@ namespace SlideMenu
 			var context = UIGraphics.GetCurrentContext();
 
 			context.SetLineWidth(2);
-			UIColor.Black.SetStroke();
+			_color.SetStroke();
 			UIColor.Clear.SetFill();
 
 			var topPath = new CGPath();

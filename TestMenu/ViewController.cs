@@ -21,28 +21,23 @@ namespace TestMenu
 
 			View.BackgroundColor = UIColor.Green;
 
-			_menu = new SlideOutMenu(MenuPositionType.Top);
-			//_menu.ChevronOffset = 100;
-			_menu.HideMenuBackgroundOnCollapse = true;
-			_menu.AddRoomForNavigationBar = true;
+			_menu = new SlideOutMenu(MenuPositionType.Bottom);
+
+			_menu.HideMenuBackgroundOnCollapse = false;
+			//_menu.AddRoomForNavigationBar = true;
 			//_menu.ExpandedMenuSize = 350;
 
-			_menu.CollapsedUIPosition = ContentPositionType.Right;
-			_menu.ExpandedUIPosition = ContentPositionType.Right;
+			_menu.MenuShouldFillScreen = true;
+			_menu.UIPosition = ContentPositionType.Center;
 
 			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
 			{
 				Data = n,
 				DisplayName = n.ToString(),
-				MenuOptionSelected = (str) =>
-				{
-					_menu.SetDisplayLabel(str.ToString());
-					_menu.AnimateClosed(null);
-				}
+				MenuOptionSelected = null
 			});
 
-
-			_menu.AddMenuToSuperview(this.View, values, values.First());
+			_menu.AddMenuToView(this.View, values, values.First());
 		}
 
 		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)
@@ -53,9 +48,9 @@ namespace TestMenu
 
 			var touchLocation = touch.LocationInView(_menu);
 
-			if (touchLocation.X < 0 || touchLocation.Y > 0)
+			if (touchLocation.X < 0 || touchLocation.Y < 0)
 			{
-				// Touch is outside of menu
+				_menu.AnimateClosed(null);
 			}
 		}
 	}

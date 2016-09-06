@@ -8,12 +8,13 @@ namespace SlideMenu
 {
 	public class MenuTableViewSource : UITableViewSource
 	{
-		
 		const string DefaultCellIdentifier = "DefaultCell";
 		IEnumerable<MenuOptionModel> _values;
+		Action<MenuOptionModel> _rowSelected;
 
-		public MenuTableViewSource(IEnumerable<MenuOptionModel> values)
+		public MenuTableViewSource(IEnumerable<MenuOptionModel> values, Action<MenuOptionModel> rowSelected)
 		{
+			_rowSelected = rowSelected;
 			_values = values;
 		}
 
@@ -47,6 +48,13 @@ namespace SlideMenu
 
 			var type = _values.ElementAt(indexPath.Row);
 
+			// row selected handler is for menu notification.
+			if (_rowSelected != null)
+			{
+				_rowSelected(type);
+			}
+
+			// invoke any method user added
 			if (type.MenuOptionSelected != null)
 			{
 				type.MenuOptionSelected(type.Data);

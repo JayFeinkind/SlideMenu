@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Constraints\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,12 +54,13 @@
     <Compile Include="SlideOutMenu.cs" />
     <Compile Include="MenuTableViewSource.cs" />
     <Compile Include="ChevronView.cs" />
-    <Compile Include="MenuBoarder.cs" />
-    <Compile Include="IMenuConstraints.cs" />
-    <Compile Include="TopMenuConstraints.cs" />
-    <Compile Include="BottomMenuConstraints.cs" />
     <Compile Include="MenuOptionModel.cs" />
     <Compile Include="ContentPositionType.cs" />
+    <Compile Include="Constraints\BottomMenuConstraints.cs" />
+    <Compile Include="Constraints\IMenuConstraints.cs" />
+    <Compile Include="Constraints\MenuConstraintModel.cs" />
+    <Compile Include="Constraints\TopMenuConstraints.cs" />
+    <Compile Include="Constraints\MenuConstraints.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
