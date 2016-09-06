@@ -81,6 +81,7 @@ namespace SlideMenu
 			MaxBackgroundAlpha = 1;
 			CloseMenuOnSelection = true;
 			UsesSpringAnimation = true;
+			HideCurrentSelectionFromMenu = false;
 		}
 
 		private void SetLayer()
@@ -100,7 +101,8 @@ namespace SlideMenu
 			SetLayer();
 
 			// add 5 for the top constraint
-			int estimatedHeight = values.Count() * _estimatedRowHeight + _compactChevronSize + 20;
+			var valueCount = HideCurrentSelectionFromMenu ? values.Count () - 1 : values.Count ();
+			int estimatedHeight = valueCount * _estimatedRowHeight + _compactChevronSize + 20;
 
 			// If collapsed size is bigger then the expanded size and its bigger then the default 
 			//		size it will be reset both.
@@ -154,7 +156,6 @@ namespace SlideMenu
 			{
 				BackgroundColor = MenuBackgroundColor;
 			}
-
 
 			var angle = GetChevronAngle(false);
 
@@ -527,6 +528,7 @@ namespace SlideMenu
 			}
 
 			SetDisplayLabel(model.DisplayName);
+			_expandedTableView.ReloadData ();
 
 			if (CloseMenuOnSelection)
 			{
@@ -547,11 +549,11 @@ namespace SlideMenu
 		{
 			get
 			{
-				return _expandedTablaViewSource ?? new MenuTableViewSource(_values, GetMenuSelectionHandler());
+				return _expandedTablaViewSource ?? new MenuTableViewSource(_values, GetMenuSelectionHandler(), HideCurrentSelectionFromMenu, _currentSelection);
 			}
 			set
 			{
-				_expandedTableView.Source = _expandedTablaViewSource = value ?? new MenuTableViewSource(_values,  GetMenuSelectionHandler());
+				_expandedTableView.Source = _expandedTablaViewSource = value ?? new MenuTableViewSource(_values,  GetMenuSelectionHandler(), HideCurrentSelectionFromMenu, _currentSelection);
 				_expandedTableView.ReloadData();
 			}
 		}
@@ -563,6 +565,8 @@ namespace SlideMenu
 				return _expandedTableView;
 			}
 		}
+
+		public bool HideCurrentSelectionFromMenu { get; set; }
 
 		public bool UsesSpringAnimation { get; set; }
 

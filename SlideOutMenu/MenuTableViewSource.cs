@@ -11,9 +11,13 @@ namespace SlideMenu
 		const string DefaultCellIdentifier = "DefaultCell";
 		IEnumerable<MenuOptionModel> _values;
 		Action<MenuOptionModel> _rowSelected;
+		bool _hideCurrentSelection;
+		MenuOptionModel _currentSelection;
 
-		public MenuTableViewSource(IEnumerable<MenuOptionModel> values, Action<MenuOptionModel> rowSelected)
+		public MenuTableViewSource(IEnumerable<MenuOptionModel> values, Action<MenuOptionModel> rowSelected, bool hideCurrentSelection, MenuOptionModel currentSelection)
 		{
+			_hideCurrentSelection = hideCurrentSelection;
+			_currentSelection = currentSelection;
 			_rowSelected = rowSelected;
 			_values = values;
 		}
@@ -25,7 +29,7 @@ namespace SlideMenu
 
 			cell.BackgroundColor = UIColor.Clear;
 
-			cell.TextLabel.Text = _values.ElementAt(indexPath.Row).DisplayName;
+			cell.TextLabel.Text = Values.ElementAt(indexPath.Row).DisplayName;
 			cell.TextLabel.TextColor = tableView.TintColor;
 			cell.TextLabel.Lines = 0;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
@@ -37,7 +41,7 @@ namespace SlideMenu
 
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			return _values.Count();
+			return Values.Count();
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
@@ -46,7 +50,9 @@ namespace SlideMenu
 			tableView.DeselectRow(indexPath, true);
 			tableView.EndUpdates();
 
-			var type = _values.ElementAt(indexPath.Row);
+			var type = Values.ElementAt(indexPath.Row);
+
+			_currentSelection = type;
 
 			// row selected handler is for menu notification.
 			if (_rowSelected != null)
@@ -58,6 +64,23 @@ namespace SlideMenu
 			if (type.MenuOptionSelected != null)
 			{
 				type.MenuOptionSelected(type.Data);
+			}
+		}
+
+		private IEnumerable<MenuOptionModel> Values
+		{
+			get
+			{
+				if (_hideCurrentSelection)
+				{
+					return _values.Where (v => v.DisplayName != _currentSelection.DisplayName);
+				}
+
+				return _values;
+			}
+			set
+			{
+				_values = value;
 			}
 		}
 	}
