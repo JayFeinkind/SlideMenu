@@ -438,26 +438,25 @@ namespace SlideMenu
 
 			nfloat backgroundAlpha = expandedViewAlpha > MaxBackgroundAlpha ? MaxBackgroundAlpha : expandedViewAlpha;
 
-			// previously using 0.7 and 1.0 for sping values but it was a bit slow
 			AnimateNotify(
-			// duration
-			UsesSpringAnimation ? 1f : 0.5f,
-			// delay
-            0, 
-			// spring ratio
-            UsesSpringAnimation ? 0.5f : 1, 
-			// initial spring velocity
-            UsesSpringAnimation ? 0.8f : 1, 
-            UIViewAnimationOptions.CurveEaseInOut, 
-			() =>
-		   {
-				_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
-			   _collapsedLabel.Alpha = collapsedViewAlpha;
-			   _expandedTableView.Alpha = expandedViewAlpha;
-			   BackgroundColor = BackgroundColor.ColorWithAlpha( HideMenuBackgroundOnCollapse ? backgroundAlpha : 1);
-			   
-				this.LayoutIfNeeded();
-		   }, completionBlock);
+				// duration
+				UsesSpringAnimation ? 1f : 0.5f,
+				// delay
+	            0, 
+				// spring ratio
+	            UsesSpringAnimation ? 0.5f : 1, 
+				// initial spring velocity
+	            UsesSpringAnimation ? 0.8f : 1, 
+	            UIViewAnimationOptions.CurveEaseInOut, 
+				() =>
+			   {
+					_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
+				   _collapsedLabel.Alpha = collapsedViewAlpha;
+				   _expandedTableView.Alpha = expandedViewAlpha;
+				   BackgroundColor = BackgroundColor.ColorWithAlpha( HideMenuBackgroundOnCollapse ? backgroundAlpha : 1);
+				   
+					this.LayoutIfNeeded();
+		   	   }, completionBlock);
 
 			UpdateMenuLayout(menuOpen);
 
