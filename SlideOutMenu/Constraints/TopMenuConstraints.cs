@@ -62,7 +62,7 @@ namespace SlideMenu
 					null,
 					NSLayoutAttribute.NoAttribute,
 					1,
-					300));
+					_contentWidth));
 
 
 			switch (_contentPosition)

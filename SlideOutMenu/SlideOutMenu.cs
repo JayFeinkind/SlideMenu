@@ -80,6 +80,7 @@ namespace SlideMenu
 			BorderColor = UIColor.Black;
 			MaxBackgroundAlpha = 1;
 			CloseMenuOnSelection = true;
+			UsesSpringAnimation = true;
 		}
 
 		private void SetLayer()
@@ -438,7 +439,17 @@ namespace SlideMenu
 			nfloat backgroundAlpha = expandedViewAlpha > MaxBackgroundAlpha ? MaxBackgroundAlpha : expandedViewAlpha;
 
 			// previously using 0.7 and 1.0 for sping values but it was a bit slow
-			AnimateNotify(1f, 0, 0.50f, 0.8f, UIViewAnimationOptions.CurveEaseInOut, () =>
+			AnimateNotify(
+			// duration
+			UsesSpringAnimation ? 1f : 0.5f,
+			// delay
+            0, 
+			// spring ratio
+            UsesSpringAnimation ? 0.5f : 1, 
+			// initial spring velocity
+            UsesSpringAnimation ? 0.8f : 1, 
+            UIViewAnimationOptions.CurveEaseInOut, 
+			() =>
 		   {
 				_chevronView.Transform = CGAffineTransform.MakeRotation(angle);
 			   _collapsedLabel.Alpha = collapsedViewAlpha;
@@ -458,6 +469,8 @@ namespace SlideMenu
 			{
 				MenuClosedHandler();
 			}
+
+			MenuOpen = menuOpen;
 		}
 
 		private void UpdateMenuLayout(bool menuOpen)
@@ -551,6 +564,8 @@ namespace SlideMenu
 				return _expandedTableView;
 			}
 		}
+
+		public bool UsesSpringAnimation { get; set; }
 
 		public bool CloseMenuOnSelection { get; set; }
 

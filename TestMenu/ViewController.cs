@@ -13,6 +13,8 @@ namespace TestMenu
 		}
 
 		SlideOutMenu _menu;
+		SlideOutMenu _menuTwo;
+		SlideOutMenu _menuThree;
 
 		public override void ViewDidLoad()
 		{
@@ -21,12 +23,21 @@ namespace TestMenu
 
 			View.BackgroundColor = UIColor.Green;
 
-			_menu = new SlideOutMenu(MenuPositionType.Bottom);
+			_menuThree = GetMenu(ContentPositionType.Left, MenuPositionType.Top);
+			_menu = GetMenu(ContentPositionType.Right, MenuPositionType.Bottom);
+			_menuTwo = GetMenu(ContentPositionType.Left, MenuPositionType.Bottom);
 
-			_menu.HideMenuBackgroundOnCollapse = true;
-			_menu.ContentWidth = 150;
-			_menu.MenuShouldFillScreen = false;
-			_menu.UIPosition = ContentPositionType.Center;
+		}
+
+		private SlideOutMenu GetMenu(ContentPositionType position, MenuPositionType menuPosition)
+		{
+			var menu = new SlideOutMenu(menuPosition);
+
+			menu.HideMenuBackgroundOnCollapse = true;
+			menu.ContentWidth = 150;
+			menu.MenuShouldFillScreen = false;
+			menu.UIPosition = position;
+			menu.ExpandedMenuSize = 150;
 
 			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
 			{
@@ -35,12 +46,15 @@ namespace TestMenu
 				MenuOptionSelected = null
 			});
 
-			_menu.AddMenuToView(this.View, values, values.First());
+			menu.AddMenuToView(this.View, values, values.First());
+			return menu;
 		}
 
 		private void CloseMenu()
 		{
 			_menu.AnimateClosed(null);
+			_menuTwo.AnimateClosed(null);
+			_menuThree.AnimateClosed(null);
 		}
 
 		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)
@@ -51,10 +65,26 @@ namespace TestMenu
 
 			bool touchedOutside = true;
 
-			if (touch.View == _menu)
+			if (touch.View == _menu || touch.View == _menuTwo || touch.View == _menuThree)
 				touchedOutside = false;
 
 			foreach (var view in _menu.Subviews)
+			{
+				if (touch.View == view)
+				{
+					touchedOutside = false;
+				}
+			}
+
+			foreach (var view in _menuTwo.Subviews)
+			{
+				if (touch.View == view)
+				{
+					touchedOutside = false;
+				}
+			}
+
+			foreach (var view in _menuThree.Subviews)
 			{
 				if (touch.View == view)
 				{
