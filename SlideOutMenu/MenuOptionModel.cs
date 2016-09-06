@@ -1,4 +1,5 @@
 ﻿using System;
+using UIKit;
 
 namespace SlideMenu
 {
@@ -7,6 +8,7 @@ namespace SlideMenu
 		public string DisplayName { get; set; }
 		public object Data { get; set; }
 		public Action<object> MenuOptionSelected { get; set; }
+		public UIColor DisplayColor { get; set; }
 	}
 }
 

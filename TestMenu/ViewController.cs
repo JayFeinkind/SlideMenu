@@ -23,12 +23,10 @@ namespace TestMenu
 
 			_menu = new SlideOutMenu(MenuPositionType.Bottom);
 
-			_menu.HideMenuBackgroundOnCollapse = false;
-
-			//_menu.ExpandedMenuSize = 350;
-
+			_menu.HideMenuBackgroundOnCollapse = true;
+			_menu.ContentWidth = 150;
 			_menu.MenuShouldFillScreen = false;
-			_menu.UIPosition = ContentPositionType.Left;
+			_menu.UIPosition = ContentPositionType.Center;
 
 			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
 			{
@@ -40,18 +38,32 @@ namespace TestMenu
 			_menu.AddMenuToView(this.View, values, values.First());
 		}
 
+		private void CloseMenu()
+		{
+			_menu.AnimateClosed(null);
+		}
+
 		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)
 		{
 			base.TouchesBegan(touches, evt);
 
 			var touch = touches.AnyObject as UITouch;
 
-			var touchLocation = touch.LocationInView(_menu);
+			bool touchedOutside = true;
 
-			if (touchLocation.X < 0 || touchLocation.Y < 0)
+			if (touch.View == _menu)
+				touchedOutside = false;
+
+			foreach (var view in _menu.Subviews)
 			{
-				_menu.AnimateClosed(null);
+				if (touch.View == view)
+				{
+					touchedOutside = false;
+				}
 			}
+
+			if (touchedOutside)
+				CloseMenu();
 		}
 	}
 }
