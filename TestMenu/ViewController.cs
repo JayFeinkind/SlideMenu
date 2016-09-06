@@ -34,10 +34,6 @@ namespace TestMenu
 		{
 			var menu = new SlideOutMenu(menuPosition);
 
-
-
-
-
 			//menu.UIPosition = position;
 			//menu.ExpandedMenuSize = 150;
 			//menu.HideCurrentSelectionFromMenu = true;
@@ -46,7 +42,7 @@ namespace TestMenu
 
 			models.Add(new MenuOptionModel { 
 				Data = "New POS Order",
-				DisplayName = "New POS Order" + " " + "New POS Order" + " " + "New POS Order"
+				DisplayName = "New POS Order"
 			});
 			models.Add(new MenuOptionModel
 			{
