@@ -513,9 +513,11 @@ namespace SlideMenu
 			{
 				MenuOptionSelectedHandler(model);
 			}
+
+			SetDisplayLabel(model.DisplayName);
+
 			if (CloseMenuOnSelection)
 			{
-				SetDisplayLabel(model.DisplayName);
 				AnimateClosed(null);
 			}
 		}

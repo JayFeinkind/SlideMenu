@@ -51,7 +51,7 @@ namespace SlideMenu
 					contentView,
 					NSLayoutAttribute.Top,
 				1,
-				1));
+				-10));
 			
 			// width constraint
 			contentView.AddConstraint(
@@ -107,11 +107,32 @@ namespace SlideMenu
 		public override void AddMainConstraints(UIView superView, bool addRoomForNavigationBar)
 		{
 			// 64 is 44 for nav bar and 20 for status bar
-			nfloat top = addRoomForNavigationBar ? 64 : 0;
+			nfloat top = addRoomForNavigationBar ? 54 : -10;
 			superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Height, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, _collapsedSize));
 			superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Top, NSLayoutRelation.Equal, superView, NSLayoutAttribute.TopMargin, 1, top));
-			superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Right, 1, 0));
-			superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Left, 1, 0));
+
+			if (_menuShouldFillScreen)
+			{
+				superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Right, 1, 0));
+				superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Left, 1, 0));
+			}
+			else
+			{
+				superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Width, NSLayoutRelation.Equal, null, NSLayoutAttribute.NoAttribute, 1, _contentWidth + 10));
+
+				switch (_contentPosition)
+				{
+					case ContentPositionType.Center:
+						superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, superView, NSLayoutAttribute.CenterX, 1, 0));
+						break;
+					case ContentPositionType.Right:
+						superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Right, 1, -5));
+						break;
+					case ContentPositionType.Left:
+						superView.AddConstraint(NSLayoutConstraint.Create(superView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, _menuView, NSLayoutAttribute.Left, 1, -5));
+						break;
+				}
+			}
 		}
 	}
 }

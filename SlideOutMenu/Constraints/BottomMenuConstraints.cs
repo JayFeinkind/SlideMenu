@@ -81,10 +81,10 @@ namespace SlideMenu
 						superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, superView, NSLayoutAttribute.CenterX, 1, 0));
 						break;
 					case ContentPositionType.Right:
-						superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Right, 1, 0));
+						superView.AddConstraint(NSLayoutConstraint.Create(_menuView, NSLayoutAttribute.Right, NSLayoutRelation.Equal, superView, NSLayoutAttribute.Right, 1, -5));
 						break;
 					case ContentPositionType.Left:
-						superView.AddConstraint(NSLayoutConstraint.Create(superView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, _menuView, NSLayoutAttribute.Left, 1, 0));
+						superView.AddConstraint(NSLayoutConstraint.Create(superView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, _menuView, NSLayoutAttribute.Left, 1, -5));
 						break;
 				}
 			}

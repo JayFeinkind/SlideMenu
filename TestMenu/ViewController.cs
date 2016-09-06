@@ -24,11 +24,11 @@ namespace TestMenu
 			_menu = new SlideOutMenu(MenuPositionType.Bottom);
 
 			_menu.HideMenuBackgroundOnCollapse = false;
-			//_menu.AddRoomForNavigationBar = true;
+
 			//_menu.ExpandedMenuSize = 350;
 
-			_menu.MenuShouldFillScreen = true;
-			_menu.UIPosition = ContentPositionType.Center;
+			_menu.MenuShouldFillScreen = false;
+			_menu.UIPosition = ContentPositionType.Left;
 
 			var values = Enumerable.Range(0, 7).Select(n => new MenuOptionModel
 			{
