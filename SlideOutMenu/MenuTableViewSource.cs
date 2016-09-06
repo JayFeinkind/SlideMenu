@@ -71,7 +71,7 @@ namespace SlideMenu
 		{
 			get
 			{
-				if (_hideCurrentSelection)
+				if (_hideCurrentSelection && _currentSelection != null)
 				{
 					return _values.Where (v => v.DisplayName != _currentSelection.DisplayName);
 				}

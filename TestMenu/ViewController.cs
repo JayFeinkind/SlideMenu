@@ -47,7 +47,7 @@ namespace TestMenu
 				MenuOptionSelected = null
 			});
 
-			menu.AddMenuToView(this.View, values, values.First());
+			menu.AddMenuToView(this.View, values, null);
 			return menu;
 		}
 
