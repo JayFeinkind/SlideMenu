@@ -315,6 +315,16 @@ namespace SlideMenu
 
 		#region Menu Interaction
 
+		private void RotateChevron()
+		{
+			var degrees = (_mainHeightConstraint.Constant / _maxSize) * 180;
+			if (_position == MenuPositionType.Top) degrees += 180;
+
+			var radians = degrees * (Math.PI / 180);
+
+			_chevronView.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
+		}
+
 		private void SlideMenuFromPan(UIPanGestureRecognizer panGesture)
 		{
 			var menuTouchLocation = panGesture.LocationInView(this);
@@ -348,25 +358,22 @@ namespace SlideMenu
 				if (alpha < 0)
 					alpha = 0;
 
+				// only update chevron if it needs it.  This will cause a re-draw
 				if (_chevronHeightConstraint.Constant != _compactChevronSize)
 				{
 					_chevronHeightConstraint.Constant = _compactChevronSize;
 					_chevronContainer.SetNeedsDisplay();
 				}
 
-				var degrees = (_mainHeightConstraint.Constant / _maxSize) * 180;
-				if (_position == MenuPositionType.Top) degrees += 180;
+				RotateChevron();
 
-				var radians = degrees * (Math.PI / 180);
-
-				_chevronView.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
-
+				// alpha is calculated for expanded view so take opposite for compact
 				_expandedTableView.Alpha = alpha;
 				_collapsedLabel.Alpha = 1 - alpha;
 
 				nfloat backgroundAlpha = 1;
 
-				// if the menu is going to be hidden in compact mode change alpha of boarder and main background
+				// if the menu is going to be hidden in compact mode change alpha of main background
 				if (HideMenuBackgroundOnCollapse == true)
 				{
 					backgroundAlpha = _expandedTableView.Alpha > MaxBackgroundAlpha ? MaxBackgroundAlpha : _expandedTableView.Alpha;
@@ -397,6 +404,7 @@ namespace SlideMenu
 				// this will not actually change anything untill LayoutIfNeeded is called
 				_mainHeightConstraint.Constant = finalSize;
 
+				// get final alpha values for animation
 				int compactViewAlpha = Convert.ToInt16(finalSize == _minSize);
 				int expandedViewAlpha = Convert.ToInt16(finalSize == _maxSize);
 
@@ -406,7 +414,7 @@ namespace SlideMenu
 
 		private void ShowOrHideMenuFromTap()
 		{
-			var newHeight = _mainHeightConstraint.Constant == _minSize ? _maxSize : _minSize;
+			var newHeight = MenuOpen ? _minSize : _maxSize;
 			int compactViewAlpha = Convert.ToInt16(newHeight == _minSize);
 			int expandedViewAlpha = Convert.ToInt16(newHeight == _maxSize);
 

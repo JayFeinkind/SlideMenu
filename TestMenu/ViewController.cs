@@ -12,7 +12,7 @@ namespace TestMenu
 		{
 			// Note: this .ctor should not contain any initialization logic.
 		}
-
+		UITapGestureRecognizer _closeMenuTap;
 		SlideOutMenu _menu;
 		//SlideOutMenu _menuTwo;
 		//SlideOutMenu _menuThree;
@@ -21,6 +21,18 @@ namespace TestMenu
 		{
 			base.ViewDidLoad();
 			// Perform any additional setup after loading the view, typically from a nib.
+
+			_closeMenuTap = new UITapGestureRecognizer(CloseMenu);
+			_closeMenuTap.ShouldReceiveTouch = (recognizer, touch) => {
+
+				var location = touch.LocationInView(View);
+
+				var inMenu = _menu.Frame.Contains(location);
+
+				return inMenu == false;
+			};
+
+			View.AddGestureRecognizer(_closeMenuTap);
 
 			View.BackgroundColor = UIColor.Green;
 
@@ -33,11 +45,12 @@ namespace TestMenu
 		private SlideOutMenu GetMenu(ContentPositionType position, MenuPositionType menuPosition)
 		{
 			var menu = new SlideOutMenu(menuPosition);
-
+			menu.UIPosition = ContentPositionType.Right;
 			//menu.UIPosition = position;
 			//menu.ExpandedMenuSize = 150;
 			//menu.HideCurrentSelectionFromMenu = true;
-
+			menu.MenuShouldFillScreen = false;
+			menu.ContentWidth = 400;
 			List<MenuOptionModel> models = new List<MenuOptionModel>();
 
 			models.Add(new MenuOptionModel { 
@@ -69,45 +82,6 @@ namespace TestMenu
 			_menu.AnimateClosed(null);
 			//_menuTwo.AnimateClosed(null);
 			//_menuThree.AnimateClosed(null);
-		}
-
-		public override void TouchesBegan(Foundation.NSSet touches, UIEvent evt)
-		{
-			base.TouchesBegan(touches, evt);
-
-			var touch = touches.AnyObject as UITouch;
-
-			bool touchedOutside = true;
-
-			if (touch.View == _menu) //|| touch.View == _menuTwo || touch.View == _menuThree)
-				touchedOutside = false;
-
-			foreach (var view in _menu.Subviews)
-			{
-				if (touch.View == view)
-				{
-					touchedOutside = false;
-				}
-			}
-
-			//foreach (var view in _menuTwo.Subviews)
-			//{
-			//	if (touch.View == view)
-			//	{
-			//		touchedOutside = false;
-			//	}
-			//}
-
-			//foreach (var view in _menuThree.Subviews)
-			//{
-			//	if (touch.View == view)
-			//	{
-			//		touchedOutside = false;
-			//	}
-			//}
-
-			if (touchedOutside)
-				CloseMenu();
 		}
 	}
 }
