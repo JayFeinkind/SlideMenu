@@ -117,6 +117,10 @@
     <Compile Include="NavigationController.designer.cs">
       <DependentUpon>NavigationController.cs</DependentUpon>
     </Compile>
+    <Compile Include="DesignerTestViewController.cs" />
+    <Compile Include="DesignerTestViewController.designer.cs">
+      <DependentUpon>DesignerTestViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SlideOutMenu\SlideMenu.csproj">

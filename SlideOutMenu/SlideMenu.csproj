@@ -61,6 +61,7 @@
     <Compile Include="Constraints\MenuConstraintModel.cs" />
     <Compile Include="Constraints\TopMenuConstraints.cs" />
     <Compile Include="Constraints\MenuConstraints.cs" />
+    <Compile Include="SlideView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

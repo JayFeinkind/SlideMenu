@@ -9,12 +9,12 @@ using ObjCRuntime;
 
 namespace SlideMenu
 {
-	public class SlideOutMenu : UIView
+	public class SlideOutMenu : SlideView
 	{
 		#region Private Fields
 
-		public event Action MenuClosedHandler;
-		public event Action MenuOpenHandler;
+		public new event Action MenuClosedHandler;
+		public new event Action MenuOpenHandler;
 		public event Action<MenuOptionModel> MenuOptionSelectedHandler;
 
 		UITapGestureRecognizer _menuTapGesture;
@@ -600,7 +600,7 @@ namespace SlideMenu
 
 		public int ContentWidth { get; set; }
 
-		public int ExpandedMenuSize
+		public new int ExpandedSize
 		{
 			get
 			{
@@ -612,7 +612,7 @@ namespace SlideMenu
 			}
 		}
 
-		public int CollapsedMenuSize
+		public new int CollapsedSize
 		{
 			get
 			{
