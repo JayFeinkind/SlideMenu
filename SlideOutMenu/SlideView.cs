@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -15,7 +16,7 @@ namespace SlideMenu
 		public event Action MenuClosedHandler;
 		public event Action MenuOpenHandler;
 
-		nfloat currentTouchOffset;
+		CGPoint firstTouchLocation;
 
 		public SlideView()
 		{
@@ -30,12 +31,17 @@ namespace SlideMenu
 		private void Initialize()
 		{
 			MenuOpen = false;
-			TranslatesAutoresizingMaskIntoConstraints = false;
 			_menuPanGesture = new UIPanGestureRecognizer(SlideMenuFromPan);
 			_menuTapGesture = new UITapGestureRecognizer(ShowOrHideMenuFromTap);
-
 			AddGestureRecognizer(_menuTapGesture);
 			AddGestureRecognizer(_menuPanGesture);
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			Layer.CornerRadius = CornerRadius;
 		}
 
 		[Export("requiresConstraintBasedLayout")]
@@ -68,79 +74,64 @@ namespace SlideMenu
 
 		private void SlideMenuFromPan(UIPanGestureRecognizer panGesture)
 		{
-			var superviewTouchLocation = panGesture.LocationInView(Superview);
 			var velocity = panGesture.VelocityInView(this);
-
 			var constraint = GetChangedConstraint();
+			var touchLocation = panGesture.LocationInView(this);
 
 			if (panGesture.State == UIGestureRecognizerState.Began && panGesture.NumberOfTouches == 1)
 			{
-				switch (SlideDirection)
-				{
-					case SlideDirectionType.Up:
-						currentTouchOffset = superviewTouchLocation.Y - constraint.Constant;
-						break;
-					case SlideDirectionType.Down:
-						currentTouchOffset = constraint.Constant - superviewTouchLocation.Y;
-						break;
-					case SlideDirectionType.Right:
-						currentTouchOffset = constraint.Constant - superviewTouchLocation.X;
-						break;
-					case SlideDirectionType.Left:
-						currentTouchOffset = superviewTouchLocation.X - constraint.Constant;
-						break;
-				}
+				firstTouchLocation = touchLocation;
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Changed && panGesture.NumberOfTouches == 1)
 			{
-				nfloat offset = 0;
-
+				// instantly update height, do not use animation or it will not keep up with pan gesture
+				// NOTE: Slide direction refers to which way you would swipe to expand menu, not current slide direction
 				switch (SlideDirection)
 				{
 					case SlideDirectionType.Up:
-						offset = currentTouchOffset - superviewTouchLocation.Y;
-						currentTouchOffset = superviewTouchLocation.Y;
+						constraint.Constant += firstTouchLocation.Y - touchLocation.Y;
 						break;
 					case SlideDirectionType.Down:
-						offset = superviewTouchLocation.Y - currentTouchOffset;
-						currentTouchOffset = superviewTouchLocation.Y;
+						constraint.Constant += (firstTouchLocation.Y - touchLocation.Y) * -1;
 						break;
 					case SlideDirectionType.Right:
-						offset = currentTouchOffset - superviewTouchLocation.X;
-						currentTouchOffset = superviewTouchLocation.X;
+						constraint.Constant += (firstTouchLocation.X - touchLocation.X) * -1;
 						break;
 					case SlideDirectionType.Left:
-						offset = superviewTouchLocation.X - currentTouchOffset;
-						currentTouchOffset = superviewTouchLocation.X;
+						constraint.Constant += firstTouchLocation.X - touchLocation.X;
 						break;
 				}
 
-				// instantly update height, do not use animation or it will not keep up with pan gesture
-				constraint.Constant += offset;
+				// For whatever reason when slide direction is up animation works better if touch
+				//    location is not updated
+				if (SlideDirection != SlideDirectionType.Up)
+				{
+					firstTouchLocation = touchLocation;
+				}
+
 				this.LayoutIfNeeded();
 			}
 			else if (panGesture.State == UIGestureRecognizerState.Ended)
 			{
 				int finalSize = 0;
 
-				if (SlideDirection == SlideDirectionType.Up)
+				switch (SlideDirection)
 				{
-					finalSize = velocity.Y < 0 ? ExpandedSize : CollapsedSize;
-				}
-				else if (SlideDirection == SlideDirectionType.Down)
-				{
-					finalSize = velocity.Y > 0 ? ExpandedSize : CollapsedSize;
-				}
-				else if (SlideDirection == SlideDirectionType.Right)
-				{
-					finalSize = velocity.X < 0 ? CollapsedSize : ExpandedSize;
-				}
-				else if (SlideDirection == SlideDirectionType.Left)
-				{
-					finalSize = velocity.X < 0 ? ExpandedSize : CollapsedSize;
+					case SlideDirectionType.Up:
+						finalSize = velocity.Y < 0 ? ExpandedSize : CollapsedSize;
+						break;
+					case SlideDirectionType.Down:
+						finalSize = velocity.Y > 0 ? ExpandedSize : CollapsedSize;
+						break;
+					case SlideDirectionType.Right:
+						finalSize = velocity.X < 0 ? CollapsedSize : ExpandedSize;
+						break;
+					case SlideDirectionType.Left:
+						finalSize = velocity.X < 0 ? ExpandedSize : CollapsedSize;
+						break;
 				}
 
-				// this will not actually change anything untill LayoutIfNeeded is called during animation
+				// this will not actually change anything until LayoutIfNeeded is called during animation
 				constraint.Constant = finalSize;
 				AnimateMenu(finalSize, null);
 			}
@@ -162,16 +153,17 @@ namespace SlideMenu
 			var constraint = GetChangedConstraint();
 			constraint.Constant = newHeight;
 
+			// if using spring animation extend duration because spring animation is included
+			//    in duration
 			AnimateNotify(
-				duration: 1f,
+				duration: UseSpringAnimation ? 1f : 0.5f,
 				delay: 0,
-				springWithDampingRatio: 0.5f,
-				initialSpringVelocity: 0.8f, 
+				springWithDampingRatio: UseSpringAnimation ? SpringWithDampingRatio : 1, //0.5
+				initialSpringVelocity: UseSpringAnimation ? InitialSpringVelocity : 1, //0.8
 				options: UIViewAnimationOptions.CurveEaseInOut,
 			    animations:() => {
 				// must call LayoutIfNeeded on Superview or change will not animate
-				if (Superview != null)
-					Superview.LayoutIfNeeded(); 
+				if (Superview != null) Superview.LayoutIfNeeded(); 
 				},
 				completion: completionBlock);
 
@@ -197,24 +189,32 @@ namespace SlideMenu
 			AnimateMenu(ExpandedSize, completionHandler);
 		}
 
+		#region Designer Properties
+
 		[Export("CollapsedSize"), Browsable(true)]
 		public int CollapsedSize { get; set; }
 
 		[Export("ExpandedSize"), Browsable(true)]
 		public int ExpandedSize { get; set; }
 
-		public bool MenuOpen { get; set; }
-
 		[Export("SlideDirection"), Browsable(true)]
 		public SlideDirectionType SlideDirection { get; set; }
-	}
 
-	public enum SlideDirectionType
-	{
-		Down,
-		Up,
-		Left,
-		Right
+		[Export("CornerRadius"), Browsable(true)]
+		public nfloat CornerRadius { get; set; }
+
+		[Export("UseSpringAnimation"), Browsable(true)]
+		public bool UseSpringAnimation { get; set; }
+
+		[Export("SpringWithDampingRatio"), Browsable(true)]
+		public nfloat SpringWithDampingRatio { get; set; }
+
+		[Export("InitialSpringVelocity"), Browsable(true)]
+		public nfloat InitialSpringVelocity { get; set; }
+
+		#endregion
+
+		public bool MenuOpen { get; set; }
 	}
 }
 

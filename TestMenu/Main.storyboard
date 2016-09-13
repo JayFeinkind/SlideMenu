@@ -52,7 +52,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <subviews>
                             <view contentMode="scaleToFill" id="268" customClass="SlideView" translatesAutoresizingMaskIntoConstraints="NO">
-                                <rect key="frame" x="180" y="550" width="240" height="50"/>
+                                <rect key="frame" x="180" y="0.0" width="240" height="50"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="CollapsedSize">
                                         <integer key="value" value="50"/>
@@ -61,7 +61,17 @@
                                         <integer key="value" value="400"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="SlideDirection">
-                                        <integer key="value" value="1"/>
+                                        <integer key="value" value="0"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="CornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="UseSpringAnimation" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="SpringWithDampingRatio">
+                                        <real key="value" value="0.5"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="InitialSpringVelocity">
+                                        <real key="value" value="0.8"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <color key="backgroundColor" colorSpace="calibratedRGB" red="0" green="1" blue="0" alpha="1"/>
@@ -71,9 +81,9 @@
                             </view>
                         </subviews>
                         <constraints>
-                            <constraint id="269" firstItem="265" firstAttribute="bottom" secondItem="268" secondAttribute="bottom"/>
                             <constraint id="270" firstItem="265" firstAttribute="trailing" secondItem="268" secondAttribute="trailing" constant="180"/>
                             <constraint id="271" firstItem="268" firstAttribute="leading" secondItem="265" secondAttribute="leading" constant="180"/>
+                            <constraint id="278" firstItem="268" firstAttribute="top" secondItem="265" secondAttribute="top"/>
                         </constraints>
                     </view>
                     <connections>
