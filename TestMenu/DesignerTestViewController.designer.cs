@@ -16,13 +16,22 @@ namespace TestMenu
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        SlideMenu.SlideView SlideMenu { get; set; }
+        UIKit.UILabel _displayLabel { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        SlideMenu.SlideView _slideMenu { get; set; }
 
         void ReleaseDesignerOutlets ()
         {
-            if (SlideMenu != null) {
-                SlideMenu.Dispose ();
-                SlideMenu = null;
+            if (_displayLabel != null) {
+                _displayLabel.Dispose ();
+                _displayLabel = null;
+            }
+
+            if (_slideMenu != null) {
+                _slideMenu.Dispose ();
+                _slideMenu = null;
             }
         }
     }

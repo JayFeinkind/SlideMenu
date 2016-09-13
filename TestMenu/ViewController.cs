@@ -35,23 +35,25 @@ namespace TestMenu
 			View.AddGestureRecognizer(_closeMenuTap);
 
 			View.BackgroundColor = UIColor.Green;
-
-			//_menuThree = GetMenu(ContentPositionType.Left, MenuPositionType.Top);
-			_menu = GetMenu(ContentPositionType.Center, MenuPositionType.Bottom);
-			//_menuTwo = GetMenu(ContentPositionType.Left, MenuPositionType.Bottom);
-
 		}
 
-		private SlideOutMenu GetMenu(ContentPositionType position, MenuPositionType menuPosition)
+		private void SetMenu(ContentPositionType position, MenuPositionType menuPosition)
 		{
-			var menu = new SlideOutMenu(menuPosition);
-			menu.UIPosition = ContentPositionType.Right;
-			//menu.UIPosition = position;
-			//menu.ExpandedMenuSize = 150;
-			//menu.HideCurrentSelectionFromMenu = true;
-			menu.MenuShouldFillScreen = false;
-			menu.ContentWidth = 400;
-			List<MenuOptionModel> models = new List<MenuOptionModel>();
+			_menu = new SlideOutMenu(menuPosition);
+			_menu.UIPosition = position;
+			_menu.ShowCurrentSelection = true;
+			_menu.AddRoomForNavigationBar = false;
+			_menu.MenuBackgroundColor = UIColor.White;
+			_menu.ChevronColor = UIColor.Black;
+			_menu.DisplayLabelColor = UIColor.Black;
+			_menu.MaxBackgroundAlpha = 1;
+			_menu.CloseMenuOnSelection = true;
+			_menu.UsesSpringAnimation = true;
+			_menu.HideCurrentSelectionFromMenu = true;
+			_menu.DisplayLabelFont = UIFont.BoldSystemFontOfSize(16);
+			_menu.MenuShouldFillScreen = false;
+			_menu.ContentWidth = 400;
+			var models = new List<MenuOptionModel>();
 
 			models.Add(new MenuOptionModel { 
 				Data = "New POS Order",
@@ -73,8 +75,7 @@ namespace TestMenu
 				DisplayName = "Select New Option"
 			});
 
-			menu.AddMenuToView(this.View, models, models.First());
-			return menu;
+			_menu.AddMenuToView(this.View, models, models.First());
 		}
 
 		private void CloseMenu()

@@ -52,7 +52,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <subviews>
                             <view contentMode="scaleToFill" id="268" customClass="SlideView" translatesAutoresizingMaskIntoConstraints="NO">
-                                <rect key="frame" x="180" y="0.0" width="240" height="50"/>
+                                <rect key="frame" x="155" y="310" width="240" height="50"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="CollapsedSize">
                                         <integer key="value" value="50"/>
@@ -61,10 +61,10 @@
                                         <integer key="value" value="400"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="SlideDirection">
-                                        <integer key="value" value="0"/>
+                                        <integer key="value" value="1"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="CornerRadius">
-                                        <integer key="value" value="10"/>
+                                        <integer key="value" value="0"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="UseSpringAnimation" value="YES"/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="SpringWithDampingRatio">
@@ -76,18 +76,40 @@
                                 </userDefinedRuntimeAttributes>
                                 <color key="backgroundColor" colorSpace="calibratedRGB" red="0" green="1" blue="0" alpha="1"/>
                                 <constraints>
-                                    <constraint id="272" firstItem="268" firstAttribute="height" constant="50"/>
+                                    <constraint id="298" firstItem="268" firstAttribute="height" constant="50"/>
                                 </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" id="290" translatesAutoresizingMaskIntoConstraints="NO">
+                                <rect key="frame" x="155" y="360" width="240" height="204"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" lineBreakMode="tailTruncation" minimumFontSize="10" id="304" translatesAutoresizingMaskIntoConstraints="NO">
+                                        <rect key="frame" x="99" y="101" width="42" height="21"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint id="294" firstItem="290" firstAttribute="height" constant="204"/>
+                                    <constraint id="305" firstItem="304" firstAttribute="centerY" secondItem="290" secondAttribute="centerY" constant="9"/>
+                                    <constraint id="306" firstItem="304" firstAttribute="centerX" secondItem="290" secondAttribute="centerX"/>
+                                </constraints>
+                                <color key="backgroundColor" colorSpace="calibratedRGB" red="1" green="0.49803921568627452" blue="0" alpha="1"/>
                             </view>
                         </subviews>
                         <constraints>
-                            <constraint id="270" firstItem="265" firstAttribute="trailing" secondItem="268" secondAttribute="trailing" constant="180"/>
-                            <constraint id="271" firstItem="268" firstAttribute="leading" secondItem="265" secondAttribute="leading" constant="180"/>
-                            <constraint id="278" firstItem="268" firstAttribute="top" secondItem="265" secondAttribute="top"/>
+                            <constraint id="291" firstItem="265" firstAttribute="bottom" secondItem="290" secondAttribute="bottom" constant="36"/>
+                            <constraint id="292" firstItem="290" firstAttribute="leading" secondItem="265" secondAttribute="leading" constant="155"/>
+                            <constraint id="293" firstItem="265" firstAttribute="trailing" secondItem="290" secondAttribute="trailing" constant="205"/>
+                            <constraint id="295" firstItem="268" firstAttribute="leading" secondItem="290" secondAttribute="leading"/>
+                            <constraint id="296" firstItem="268" firstAttribute="trailing" secondItem="290" secondAttribute="trailing"/>
+                            <constraint id="297" firstItem="290" firstAttribute="top" secondItem="268" secondAttribute="bottom"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="SlideMenu" destination="268" id="name-outlet-268"/>
+                        <outlet property="_slideMenu" destination="268" id="name-outlet-268"/>
+                        <outlet property="_displayLabel" destination="304" id="name-outlet-304"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="266" userLabel="First Responder" sceneMemberID="firstResponder"/>

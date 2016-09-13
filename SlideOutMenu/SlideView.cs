@@ -162,8 +162,8 @@ namespace SlideMenu
 				initialSpringVelocity: UseSpringAnimation ? InitialSpringVelocity : 1, //0.8
 				options: UIViewAnimationOptions.CurveEaseInOut,
 			    animations:() => {
-				// must call LayoutIfNeeded on Superview or change will not animate
-				if (Superview != null) Superview.LayoutIfNeeded(); 
+					// must call LayoutIfNeeded on Superview or change will not animate
+					if (Superview != null) Superview.LayoutIfNeeded(); 
 				},
 				completion: completionBlock);
 
@@ -197,11 +197,18 @@ namespace SlideMenu
 		[Export("ExpandedSize"), Browsable(true)]
 		public int ExpandedSize { get; set; }
 
+		/// <summary>
+		/// NOTE: Setting this properly will only technically affect expanding direction while
+		///    sliding.  The expanding animation is accomplished by modifying the height/width constraint.
+		///    View will expand in the opposite direction as it's anchor. For example if view has a bottom
+		///    constraint but no top constraint it will expand up.
+		/// </summary>
+		/// <value>The slide direction.</value>
 		[Export("SlideDirection"), Browsable(true)]
 		public SlideDirectionType SlideDirection { get; set; }
 
 		[Export("CornerRadius"), Browsable(true)]
-		public nfloat CornerRadius { get; set; }
+		public int CornerRadius { get; set; }
 
 		[Export("UseSpringAnimation"), Browsable(true)]
 		public bool UseSpringAnimation { get; set; }
@@ -215,6 +222,8 @@ namespace SlideMenu
 		#endregion
 
 		public bool MenuOpen { get; set; }
+
+		public UIPanGestureRecognizer PanGestureRecognizer { get { return _menuPanGesture; } }
 	}
 }
 

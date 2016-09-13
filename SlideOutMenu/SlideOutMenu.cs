@@ -6,6 +6,7 @@ using System.Linq;
 using Foundation;
 using CoreAnimation;
 using ObjCRuntime;
+using System.ComponentModel;
 
 namespace SlideMenu
 {
@@ -77,7 +78,6 @@ namespace SlideMenu
 			MenuShouldFillScreen = true;
 			ChevronColor = UIColor.Black;
 			DisplayLabelColor = UIColor.Black;
-			BorderColor = UIColor.Black;
 			MaxBackgroundAlpha = 1;
 			CloseMenuOnSelection = true;
 			UsesSpringAnimation = true;
@@ -581,8 +581,6 @@ namespace SlideMenu
 		public UIColor ChevronColor { get; set; }
 
 		public UIColor DisplayLabelColor { get; set; }
-
-		public UIColor BorderColor { get; set; }
 
 		public bool MenuShouldFillScreen { get; set; }
 
