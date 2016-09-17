@@ -10,12 +10,12 @@ using System.ComponentModel;
 
 namespace SlideMenu
 {
-	public class SlideOutMenu : SlideView
+	public class SlideOutMenu : UIView
 	{
 		#region Private Fields
 
-		public new event Action MenuClosedHandler;
-		public new event Action MenuOpenHandler;
+		public event Action MenuClosedHandler;
+		public event Action MenuOpenHandler;
 		public event Action<MenuOptionModel> MenuOptionSelectedHandler;
 
 		UITapGestureRecognizer _menuTapGesture;
@@ -73,6 +73,7 @@ namespace SlideMenu
 			ShowCurrentSelection = true;
 			HideMenuBackgroundOnCollapse = true;
 			AddRoomForNavigationBar = false;
+			UsesShadow = true;
 			ContentWidth = 300;
 			MenuBackgroundColor = UIColor.White;
 			MenuShouldFillScreen = true;
@@ -89,10 +90,14 @@ namespace SlideMenu
 		{
 			Layer.MasksToBounds = false;
 			Layer.CornerRadius = 10;
-			Layer.ShadowColor = UIColor.DarkGray.CGColor;
-			Layer.ShadowOpacity = 1.0f;
-			Layer.ShadowRadius = 6.0f;
-			Layer.ShadowOffset = new System.Drawing.SizeF(0f, 3f);
+
+			if (UsesShadow)
+			{
+				Layer.ShadowColor = UIColor.DarkGray.CGColor;
+				Layer.ShadowOpacity = 1.0f;
+				Layer.ShadowRadius = 6.0f;
+				Layer.ShadowOffset = new System.Drawing.SizeF(0f, 3f);
+			}
 		}
 
 		#region Add Menu to View
@@ -574,6 +579,8 @@ namespace SlideMenu
 
 		public bool UsesSpringAnimation { get; set; }
 
+		public bool UsesShadow { get; set; }
+
 		public bool CloseMenuOnSelection { get; set; }
 
 		public nfloat MaxBackgroundAlpha { get; set; }
@@ -598,7 +605,7 @@ namespace SlideMenu
 
 		public int ContentWidth { get; set; }
 
-		public new int ExpandedSize
+		public int ExpandedSize
 		{
 			get
 			{
@@ -610,7 +617,7 @@ namespace SlideMenu
 			}
 		}
 
-		public new int CollapsedSize
+		public int CollapsedSize
 		{
 			get
 			{
