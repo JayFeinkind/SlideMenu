@@ -37,13 +37,6 @@ namespace SlideMenu
 			AddGestureRecognizer(_menuPanGesture);
 		}
 
-		public override void LayoutSubviews()
-		{
-			base.LayoutSubviews();
-
-			Layer.CornerRadius = CornerRadius;
-		}
-
 		[Export("requiresConstraintBasedLayout")]
 		bool UseNewLayout()
 		{
@@ -102,9 +95,9 @@ namespace SlideMenu
 						break;
 				}
 
-				// For whatever reason when slide direction is up animation works better if touch
+				// For whatever reason when slide direction is up or left animation works better if touch
 				//    location is not updated
-				if (SlideDirection != SlideDirectionType.Up)
+				if (SlideDirection != SlideDirectionType.Up && SlideDirection != SlideDirectionType.Left)
 				{
 					firstTouchLocation = touchLocation;
 				}
@@ -124,7 +117,7 @@ namespace SlideMenu
 						finalSize = velocity.Y > 0 ? ExpandedSize : CollapsedSize;
 						break;
 					case SlideDirectionType.Right:
-						finalSize = velocity.X < 0 ? CollapsedSize : ExpandedSize;
+						finalSize = velocity.X > 0 ? ExpandedSize : CollapsedSize;
 						break;
 					case SlideDirectionType.Left:
 						finalSize = velocity.X < 0 ? ExpandedSize : CollapsedSize;
@@ -207,9 +200,6 @@ namespace SlideMenu
 		[Export("SlideDirection"), Browsable(true)]
 		public SlideDirectionType SlideDirection { get; set; }
 
-		[Export("CornerRadius"), Browsable(true)]
-		public int CornerRadius { get; set; }
-
 		[Export("UseSpringAnimation"), Browsable(true)]
 		public bool UseSpringAnimation { get; set; }
 
@@ -224,6 +214,16 @@ namespace SlideMenu
 		public bool MenuOpen { get; set; }
 
 		public UIPanGestureRecognizer PanGestureRecognizer { get { return _menuPanGesture; } }
+
+		public UITapGestureRecognizer TapGestureRecognizer { get { return _menuTapGesture; } }
+	}
+
+	public enum SlideDirectionType
+	{
+		Down,
+		Up,
+		Left,
+		Right
 	}
 }
 
