@@ -30,7 +30,7 @@ namespace SlideMenu
 
 		private void Initialize()
 		{
-			MenuOpen = false;
+			ViewExpanded = false;
 			_menuPanGesture = new UIPanGestureRecognizer(SlideMenuFromPan);
 			_menuTapGesture = new UITapGestureRecognizer(ShowOrHideMenuFromTap);
 			AddGestureRecognizer(_menuTapGesture);
@@ -132,7 +132,7 @@ namespace SlideMenu
 
 		private void ShowOrHideMenuFromTap()
 		{
-			var newHeight = MenuOpen ? CollapsedSize : ExpandedSize;
+			var newHeight = ViewExpanded ? CollapsedSize : ExpandedSize;
 			AnimateMenu(newHeight, null);
 		}
 
@@ -149,7 +149,7 @@ namespace SlideMenu
 			// if using spring animation extend duration because spring animation is included
 			//    in duration
 			AnimateNotify(
-				duration: UseSpringAnimation ? 1f : 0.5f,
+				duration: AnimationDuration,
 				delay: 0,
 				springWithDampingRatio: UseSpringAnimation ? SpringWithDampingRatio : 1, //0.5
 				initialSpringVelocity: UseSpringAnimation ? InitialSpringVelocity : 1, //0.8
@@ -160,13 +160,13 @@ namespace SlideMenu
 				},
 				completion: completionBlock);
 
-			MenuOpen = newHeight == ExpandedSize;
+			ViewExpanded = newHeight == ExpandedSize;
 
-			if (MenuOpen && MenuOpenHandler != null)
+			if (ViewExpanded && MenuOpenHandler != null)
 			{
 				MenuOpenHandler();
 			}
-			else if (MenuOpen == false && MenuClosedHandler != null)
+			else if (ViewExpanded == false && MenuClosedHandler != null)
 			{
 				MenuClosedHandler();
 			}
@@ -180,6 +180,20 @@ namespace SlideMenu
 		public void AnimateOpen(UICompletionHandler completionHandler)
 		{
 			AnimateMenu(ExpandedSize, completionHandler);
+		}
+
+		public void Open()
+		{
+			var constraint = GetChangedConstraint();
+			constraint.Constant = ExpandedSize;
+			ViewExpanded = true;
+		}
+
+		public void Close()
+		{
+			var constraint = GetChangedConstraint();
+			constraint.Constant = CollapsedSize;
+			ViewExpanded = false;
 		}
 
 		#region Designer Properties
@@ -197,11 +211,14 @@ namespace SlideMenu
 		///    constraint but no top constraint it will expand up.
 		/// </summary>
 		/// <value>The slide direction.</value>
-		[Export("SlideDirection"), Browsable(true)]
+		//[Export("SlideDirection"), Browsable(true)]
 		public SlideDirectionType SlideDirection { get; set; }
 
 		[Export("UseSpringAnimation"), Browsable(true)]
 		public bool UseSpringAnimation { get; set; }
+
+		[Export("AnimationDuration"), Browsable(true)]
+		public nfloat AnimationDuration { get; set; }
 
 		[Export("SpringWithDampingRatio"), Browsable(true)]
 		public nfloat SpringWithDampingRatio { get; set; }
@@ -211,7 +228,7 @@ namespace SlideMenu
 
 		#endregion
 
-		public bool MenuOpen { get; set; }
+		public bool ViewExpanded { get; set; }
 
 		public UIPanGestureRecognizer PanGestureRecognizer { get { return _menuPanGesture; } }
 

@@ -11,8 +11,11 @@ using UIKit;
 
 namespace TestMenu
 {
-    [Register ("SideViewTestViewController")]
-    partial class SideViewTestViewController
+    [Register ("ChevronView")]
+    partial class ChevronView
     {
+        void ReleaseDesignerOutlets ()
+        {
+        }
     }
 }
