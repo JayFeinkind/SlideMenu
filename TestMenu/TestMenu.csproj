@@ -96,10 +96,14 @@
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
     <ImageAsset Include="Assets.xcassets\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\Elephant.imageset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\Elephant.imageset\rsz_elephant.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="SlideMenu\" />
+    <Folder Include="PullMenu\" />
+    <Folder Include="Assets.xcassets\Elephant.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -128,6 +132,10 @@
     <Compile Include="SlideMenu\SlideOutMenuViewController.cs" />
     <Compile Include="SlideMenu\SlideOutMenuViewController.designer.cs">
       <DependentUpon>SlideOutMenuViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PullMenuViewController.cs" />
+    <Compile Include="PullMenuViewController.designer.cs">
+      <DependentUpon>PullMenuViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

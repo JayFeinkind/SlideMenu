@@ -211,7 +211,7 @@ namespace SlideMenu
 		///    constraint but no top constraint it will expand up.
 		/// </summary>
 		/// <value>The slide direction.</value>
-		//[Export("SlideDirection"), Browsable(true)]
+		[Export("SlideDirection"), Browsable(true)]
 		public SlideDirectionType SlideDirection { get; set; }
 
 		[Export("UseSpringAnimation"), Browsable(true)]

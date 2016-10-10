@@ -22,6 +22,8 @@ namespace TestMenu
 			_menuOpen = false;
 		}
 
+		#region Overrides
+
 		public override void LoadView()
 		{
 			base.LoadView();
@@ -29,9 +31,10 @@ namespace TestMenu
 			_slideOutMenu.SlideDirection = SlideDirectionType.Up;
 
 			_viewTapGesture = new UITapGestureRecognizer(CloseFromTap);
-
 			View.AddGestureRecognizer(_viewTapGesture);
- 
+
+ 			_viewTapGesture.CancelsTouchesInView = false;
+
     		// Hook into slide view's gesture recognizers
 			_slideOutMenu.TapGestureRecognizer.AddTarget(AnimateFromTap);
 			_slideOutMenu.PanGestureRecognizer.AddTarget(AnimateFromPan);
@@ -50,6 +53,8 @@ namespace TestMenu
 
 			SetMenuLayer();
 
+			_mainTableView.PanGestureRecognizer.AddTarget(CloseFromTap);
+
 			_menuSelectionTableView.TableFooterView = new UIView();
 		}
 
@@ -59,6 +64,8 @@ namespace TestMenu
 
 			_menuSelectionTableView.Bounces = false;
 			_menuSelectionTableView.Alpha = 0;
+			_menuSelectionTableView.BackgroundColor = UIColor.Clear;
+
 			_slideOutMenu.BackgroundColor = UIColor.White.ColorWithAlpha(0);
 
 			_selectionLabel.Text = "0";
@@ -66,16 +73,14 @@ namespace TestMenu
 			var menuValues = Enumerable.Range(0, 6).Select(n => n.ToString());
 			_menuSelectionTableView.Source = new SlideOutMenuTableViewSource(menuValues, SetSelectedLabel);
 			_menuSelectionTableView.ReloadData();
+
+			_mainTableView.RowHeight = UITableView.AutomaticDimension;
+			_mainTableView.EstimatedRowHeight = 60;
+			_mainTableView.Source = new TestTableViewSource();
+			_mainTableView.ReloadData();
 		}
 
-		private void CloseFromTap()
-		{
-			if (_slideOutMenu.ViewExpanded)
-			{
-				_slideOutMenu.AnimateClosed(null);
-				AnimateMenu(false);
-			}
-		}
+		#endregion
 
 		private void SetSelectedLabel(string label)
 		{
@@ -99,6 +104,17 @@ namespace TestMenu
 			return menuOpen ? (float)Math.PI : (float)Math.PI * 4;
 		}
 
+		#region Animation
+
+		private void CloseFromTap()
+		{
+			if (_slideOutMenu.ViewExpanded)
+			{
+				_slideOutMenu.AnimateClosed(null);
+				AnimateMenu(false);
+			}
+		}
+
 		private void AnimateFromPan(NSObject gesture)
 		{
 			var panGesture = gesture as UIPanGestureRecognizer;
@@ -107,10 +123,11 @@ namespace TestMenu
 			if (panGesture.State == UIGestureRecognizerState.Changed && panGesture.NumberOfTouches == 1)
 			{
 				// subtract ten from height constaint since 10 pixels are off the edge
-				var alpha = (nfloat)Math.Pow((MenuHeightConstraint.Constant - 10)/ _slideOutMenu.ExpandedSize, 2);
+				var alpha = (nfloat)Math.Pow((MenuHeightConstraint.Constant)/ _slideOutMenu.ExpandedSize, 2);
 
 				var degrees = (MenuHeightConstraint.Constant / _slideOutMenu.ExpandedSize) * 180;
-				var radians = degrees * (Math.PI / 180);
+
+				var radians = degrees  * (Math.PI / 180);
 
 				_chevronView.Transform = CGAffineTransform.MakeRotation((nfloat)radians);
 				_selectionLabel.Alpha = 1 - alpha;
@@ -153,5 +170,43 @@ namespace TestMenu
 
 			_menuOpen = open;
 		}
+
+		#endregion
     }
+
+	public class TestTableViewSource : UITableViewSource
+	{
+		string CellIdentifier = "DefaultCell";
+		Lazy<UIImage> cellImage = new Lazy<UIImage>(() => UIImage.FromBundle("Elephant"));
+
+		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+		{
+			var cell = tableView.DequeueReusableCell(CellIdentifier) ?? 
+			                    new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
+
+			cell.ImageView.Image = cellImage.Value;
+
+			string text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+				"Vivamus placerat eros metus. Suspendisse mi nulla, euismod vitae tempus at, " +
+				"consectetur vitae nulla. Phasellus imperdiet tortor ac facilisis aliquam. In vulputate " +
+				"feugiat tortor, non lobortis augue molestie nec. Quisque in lectus sapien. Aenean quis metus " +
+				"felis. Nullam vestibulum nisl in vulputate congue. Nunc aliquet convallis enim, nec blandit tortor";
+
+
+			var rnd = new Random();
+
+			text = text.Substring(0, rnd.Next(text.Length - 1));
+
+			cell.TextLabel.Text = text;
+			cell.TextLabel.Lines = 0;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+
+			return cell;
+		}
+
+		public override nint RowsInSection(UITableView tableview, nint section)
+		{
+			return 30;
+		}
+	}
 }

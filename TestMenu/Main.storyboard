@@ -93,6 +93,19 @@
                                     <action selector="NavigateButton_TouchUpInside:" destination="264" id="807" eventType="touchUpInside"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="1564" translatesAutoresizingMaskIntoConstraints="NO">
+                                <rect key="frame" x="215" y="116" width="101" height="30"/>
+                                <state key="normal" title="Pull Out Menu">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <constraints>
+                                    <constraint id="1565" firstItem="1564" firstAttribute="height" constant="30"/>
+                                    <constraint id="1566" firstItem="1564" firstAttribute="width" constant="101"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="UIButton1564_TouchUpInside:" destination="264" id="1569" eventType="touchUpInside"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint id="291" firstItem="265" firstAttribute="bottom" secondItem="290" secondAttribute="bottom" constant="36"/>
@@ -103,6 +116,8 @@
                             <constraint id="297" firstItem="290" firstAttribute="top" secondItem="268" secondAttribute="bottom"/>
                             <constraint id="803" firstItem="802" firstAttribute="top" secondItem="261" secondAttribute="bottom" constant="52"/>
                             <constraint id="804" firstItem="802" firstAttribute="leading" secondItem="265" secondAttribute="leading" constant="28"/>
+                            <constraint id="1567" firstItem="1564" firstAttribute="centerY" secondItem="802" secondAttribute="centerY"/>
+                            <constraint id="1568" firstItem="1564" firstAttribute="leading" secondItem="802" secondAttribute="trailing" constant="53"/>
                         </constraints>
                     </view>
                     <connections>
@@ -110,6 +125,7 @@
                         <outlet property="_displayLabel" destination="304" id="name-outlet-304"/>
                         <outlet property="NavigateButton" destination="802" id="name-outlet-802"/>
                         <segue id="1299" destination="857" kind="show" identifier="SlideMenuSegue"/>
+                        <segue id="1562" destination="1338" kind="show" identifier="PullSegue"/>
                     </connections>
                     <navigationItem title="Slide View" id="455" key="navigationItem"/>
                 </viewController>
@@ -129,6 +145,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" colorSpace="calibratedRGB" red="0" green="1" blue="0" alpha="1"/>
                         <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="1323" translatesAutoresizingMaskIntoConstraints="NO">
+                                <rect key="frame" x="15" y="79" width="570" height="506"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1324" rowHeight="44">
+                                        <rect key="frame" x="0.0" y="28" width="570" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1324" id="1325">
+                                            <rect key="frame" x="0.0" y="0.0" width="570" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                             <view contentMode="scaleToFill" id="866" customClass="SlideView" translatesAutoresizingMaskIntoConstraints="NO">
                                 <rect key="frame" x="150" y="540" width="300" height="70"/>
                                 <userDefinedRuntimeAttributes>
@@ -211,6 +241,10 @@
                         <constraints>
                             <constraint id="868" firstItem="858" firstAttribute="bottom" secondItem="866" secondAttribute="bottom" constant="-10"/>
                             <constraint id="869" firstItem="866" firstAttribute="centerX" secondItem="858" secondAttribute="centerX"/>
+                            <constraint id="1326" firstItem="1323" firstAttribute="top" secondItem="854" secondAttribute="bottom" constant="15"/>
+                            <constraint id="1327" firstItem="1323" firstAttribute="leading" secondItem="858" secondAttribute="leading" constant="15"/>
+                            <constraint id="1328" firstItem="858" firstAttribute="trailing" secondItem="1323" secondAttribute="trailing" constant="15"/>
+                            <constraint id="1329" firstItem="858" firstAttribute="bottom" secondItem="1323" secondAttribute="bottom" constant="15"/>
                         </constraints>
                     </view>
                     <connections>
@@ -220,11 +254,93 @@
                         <outlet property="_selectionLabel" destination="893" id="name-outlet-893"/>
                         <outlet property="MenuHeightConstraint" destination="870" id="name-outlet-870"/>
                         <outlet property="_menuSelectionTableView" destination="1311" id="name-outlet-1311"/>
+                        <outlet property="_mainTableView" destination="1323" id="name-outlet-1323"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="859" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2189" y="1239"/>
         </scene>
+        <scene sceneID="1337">
+            <objects>
+                <viewController id="1338" sceneMemberID="viewController" customClass="PullMenuViewController" storyboardIdentifier="PullMenuViewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1335"/>
+                        <viewControllerLayoutGuide type="bottom" id="1336"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="1339">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" id="1572" customClass="SlideView" translatesAutoresizingMaskIntoConstraints="NO" misplaced="YES">
+                                <rect key="frame" x="370" y="155" width="230" height="290"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="1577" translatesAutoresizingMaskIntoConstraints="NO" misplaced="YES">
+                                        <rect key="frame" x="37" y="31" width="193" height="218"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1578" rowHeight="44">
+                                                <rect key="frame" x="0.0" y="28" width="193" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1578" id="1579">
+                                                    <rect key="frame" x="0.0" y="0.0" width="193" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </tableViewCellContentView>
+                                            </tableViewCell>
+                                        </prototypes>
+                                        <constraints>
+                                            <constraint id="1605" firstItem="1577" firstAttribute="width" constant="193"/>
+                                        </constraints>
+                                    </tableView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tools" textAlignment="center" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1584" translatesAutoresizingMaskIntoConstraints="NO" numberOfLines="0">
+                                        <rect key="frame" x="10" y="81" width="12" height="108.5"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                        <constraints>
+                                            <constraint id="1589" firstItem="1584" firstAttribute="width" constant="12"/>
+                                        </constraints>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint id="1573" firstItem="1572" firstAttribute="height" constant="290"/>
+                                    <constraint id="1574" firstItem="1572" firstAttribute="width" constant="30"/>
+                                    <constraint id="1581" firstItem="1577" firstAttribute="top" secondItem="1572" secondAttribute="top" constant="10"/>
+                                    <constraint id="1582" firstItem="1572" firstAttribute="bottom" secondItem="1577" secondAttribute="bottom" constant="10"/>
+                                    <constraint id="1586" firstItem="1584" firstAttribute="leading" secondItem="1572" secondAttribute="leading" constant="10"/>
+                                    <constraint id="1588" firstItem="1572" firstAttribute="centerY" secondItem="1584" secondAttribute="centerY" constant="10"/>
+                                    <constraint id="1602" firstItem="1577" firstAttribute="leading" secondItem="1572" secondAttribute="leading" constant="37"/>
+                                </constraints>
+                                <color key="backgroundColor" colorSpace="calibratedRGB" red="0" green="1" blue="1" alpha="1"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="ExpandedSize">
+                                        <integer key="value" value="230"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="CollapsedSize">
+                                        <integer key="value" value="30"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="AnimationDuration">
+                                        <real key="value" value="0.5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
+                        <constraints>
+                            <constraint id="1575" firstItem="1339" firstAttribute="centerY" secondItem="1572" secondAttribute="centerY"/>
+                            <constraint id="1576" firstItem="1339" firstAttribute="trailing" secondItem="1572" secondAttribute="trailing"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="_pullMenu" destination="1572" id="name-outlet-1572"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1340" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3094" y="497"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="Elephant" width="150" height="75"/>
+    </resources>
 </document>

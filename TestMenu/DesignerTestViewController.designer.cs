@@ -30,6 +30,10 @@ namespace TestMenu
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void NavigateButton_TouchUpInside (UIKit.UIButton sender);
 
+        [Action ("UIButton1564_TouchUpInside:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void UIButton1564_TouchUpInside (UIKit.UIButton sender);
+
         void ReleaseDesignerOutlets ()
         {
             if (_displayLabel != null) {

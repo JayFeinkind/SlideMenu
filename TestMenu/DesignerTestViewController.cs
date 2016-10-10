@@ -99,5 +99,10 @@ namespace TestMenu
 		{
 			PerformSegue("SlideMenuSegue", null);
 		}
+
+		partial void UIButton1564_TouchUpInside(UIButton sender)
+		{
+			PerformSegue("PullSegue", null);
+		}
 	}
 }

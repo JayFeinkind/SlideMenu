@@ -24,6 +24,10 @@ namespace TestMenu
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITableView _mainTableView { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITableView _menuSelectionTableView { get; set; }
 
         [Outlet]
@@ -48,6 +52,11 @@ namespace TestMenu
             if (_chevronView != null) {
                 _chevronView.Dispose ();
                 _chevronView = null;
+            }
+
+            if (_mainTableView != null) {
+                _mainTableView.Dispose ();
+                _mainTableView = null;
             }
 
             if (_menuSelectionTableView != null) {
